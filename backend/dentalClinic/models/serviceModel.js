@@ -48,4 +48,8 @@ const serviceSchema = new mongoose.Schema({
     default: Date.now,
     select: false
   }
-})
+});
+
+const Service = mongoose.model('Service', serviceSchema);
+
+module.exports = Service;

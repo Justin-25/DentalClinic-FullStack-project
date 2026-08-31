@@ -56,3 +56,7 @@ const userSchema = new mongoose.Schema({
     maxlength: [500, 'A bio must have less or equal than 500 characters...']
   }
 })
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
