@@ -31,9 +31,12 @@ const reviewSchema = new mongoose.Schema({
     ref: 'User',
     validate: {
       validator: function(e) {
-        if (e === 'doctor') return this.doctor
+        if (this.type === 'doctor') {
+          return e;
+        }
+        return true; // clinic reviews don't need this to check if fail
       },
-      message: 'Appointment must be done before adding a review on this Doctor...'
+      message: "A doctor review must specify which doctor it's for..."
     }
   },
   appointment: {
@@ -42,4 +45,4 @@ const reviewSchema = new mongoose.Schema({
   }
 });
 
-reviewSchema.index({ doctor: 1, date: 1 }, { unique: true });
+reviewSchema.index({ doctor: 1, patient: 1 }, { unique: true });
