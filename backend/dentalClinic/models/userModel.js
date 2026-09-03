@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
@@ -91,6 +92,38 @@ userSchema.virtual('schedule', {
   localField: '_id',
   justOne: true // returns a single object instead of an array
 })
+
+// Mongoose Middleware
+userSchema.pre('save', async function() {
+  // Only run this condition if password is not modified.
+  // Guard clause
+  if (!this.isModified('password')) {
+    return;
+  }
+
+  // Hash the password with a cost of 12 cost factor (rounds).
+  this.password = await bcrypt.hash(this.password, 12);
+
+  // Delete this passwordConfirm field so it doesn't store in database
+  // this field did its one job during validation, and now it should disappear before we save, because there's nothing left for it to do.
+  this.passwordConfirm = undefined
+});
+
+// Instance Methods
+userSchema.methods.correctPassword = async function(inputPassword, userPassword) {
+  return await bcrypt.compare(inputPassword, userPassword);
+}
+
+userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+
+    return JWTTimeStamp < changedTimeStamp
+  }
+
+  // return false if password not changed
+  return false;
+}
 
 const User = mongoose.model('User', userSchema);
 
