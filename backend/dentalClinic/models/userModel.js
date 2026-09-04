@@ -41,6 +41,14 @@ const userSchema = new mongoose.Schema(
         message: 'Password do not match! Please try again...'
       }
     },
+    specialization: {
+      type: String,
+    },
+    yearsOfExperience: Number,
+    bio: {
+      type: String,
+      maxlength: [500, 'A bio must have less or equal than 500 characters...']
+    },
     passwordChangedAt: Date,
     passwordResetToken: String, 
     passwordResetExpires: Date,
@@ -49,14 +57,6 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: false // Based on my understanding on natours course, this will only display on DB compass not on responses.
     },
-    specialization: {
-      type: String,
-    },
-    yearsOfExperience: Number,
-    bio: {
-      type: String,
-      maxlength: [500, 'A bio must have less or equal than 500 characters...']
-    }
   },
   {
     toJSON: { virtuals: true },
