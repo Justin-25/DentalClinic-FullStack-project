@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const User = require('../models/userModel');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
@@ -8,7 +10,7 @@ const signToken = id => {
   });
 }
 
-exports.signup = async (req, res) => {
+exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -27,9 +29,9 @@ exports.signup = async (req, res) => {
       user: newUser
     }
   });
-};
+});
 
-exports.login = async (req, res, next) => {
+exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // Check if the email and password exist
@@ -60,9 +62,9 @@ exports.login = async (req, res, next) => {
       user
     }
   })
-};
+});
 
-exports.protect = async (req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {
   let token;
 
   // Extract the token from req.headers.authorization (with the startsWith('Bearer') check)
@@ -72,10 +74,7 @@ exports.protect = async (req, res, next) => {
 
   // If do not haved a right token, do not have an access to the routes... 
   if (!token) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'Failed to acces, Please login to access this route...'
-    });
+    return next(new AppError('Failed to acces, Please login to access this route...', 401));
   }
 
   // Verify the token with jwt.verify(promisified) -> decoded
@@ -86,22 +85,16 @@ exports.protect = async (req, res, next) => {
 
   // If the token no longer exists Unauthorized the user... 
   if (!currentUser) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'User no longer exists...'
-    })
+    return next(new AppError('User no longer exists...', 401));
   }
   
   // Check the changedPasswordAfter if it the password has been changed before the protect grant the access...
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'User recently changed the password, Please try to login again...'
-    });
+    return next(new AppError('User recently changed the password, Please try to login again...', 401));
   }
 
   // Grant Access to protected Route and pass it to the user request...
   req.user = currentUser;
 
   next();
-}
+});
