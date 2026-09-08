@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 const User = require('../models/userModel');
 
 const signToken = id => {
@@ -17,6 +18,7 @@ exports.signup = async (req, res) => {
   const token = signToken(newUser._id);
 
   newUser.password = undefined;
+  newUser.active = undefined;
 
   res.status(201).json({
     status: 'success',
@@ -59,3 +61,47 @@ exports.login = async (req, res, next) => {
     }
   })
 };
+
+exports.protect = async (req, res, next) => {
+  let token;
+
+  // Extract the token from req.headers.authorization (with the startsWith('Bearer') check)
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1]
+  };
+
+  // If do not haved a right token, do not have an access to the routes... 
+  if (!token) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'Failed to acces, Please login to access this route...'
+    });
+  }
+
+  // Verify the token with jwt.verify(promisified) -> decoded
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
+
+  // Find the current User by decoded.id
+  const currentUser = await User.findById(decoded.id);
+
+  // If the token no longer exists Unauthorized the user... 
+  if (!currentUser) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'User no longer exists...'
+    })
+  }
+  
+  // Check the changedPasswordAfter if it the password has been changed before the protect grant the access...
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'User recently changed the password, Please try to login again...'
+    });
+  }
+
+  // Grant Access to protected Route and pass it to the user request...
+  req.user = currentUser;
+
+  next();
+}
