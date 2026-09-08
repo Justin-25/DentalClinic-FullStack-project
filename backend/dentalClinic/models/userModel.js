@@ -109,6 +109,16 @@ userSchema.pre('save', async function() {
   this.passwordConfirm = undefined
 });
 
+// when a patient/doctor "deletes" their account,
+// real apps usually don't actually delete the document from the database (losing appointment history, reviews, etc. tied to them). 
+// Instead, they flip active to false — a "soft delete."
+userSchema.pre(/^find/, function(next) {
+  this.find({
+    active: { $ne: false }
+  });
+  next();
+})
+
 // Instance Methods
 userSchema.methods.correctPassword = async function(inputPassword, userPassword) {
   return await bcrypt.compare(inputPassword, userPassword);
