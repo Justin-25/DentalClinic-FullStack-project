@@ -4,13 +4,16 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+// Create a JWT containing the user's ID so it can be used for authentication.
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 }
 
+// Create a new user and return a JWT for immediate authentication.
 exports.signup = catchAsync(async (req, res, next) => {
+  // Create the user from the registration data sent by the client.
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -19,6 +22,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
   const token = signToken(newUser._id);
 
+  // Prevent sensitive fields from being included in the response.
   newUser.password = undefined;
   newUser.active = undefined;
 
@@ -31,7 +35,9 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
 });
 
+// Validate the login details and return a JWT when the credentials are correct.
 exports.login = catchAsync(async (req, res, next) => {
+  // Read the credentials submitted by the client.
   const { email, password } = req.body;
 
   // Check if the email and password exist
@@ -42,7 +48,7 @@ exports.login = catchAsync(async (req, res, next) => {
     })
   }
 
-  // Check if the user exist and password is correct
+  // Include the password hash because it is hidden by the user schema by default.
   const user = await User.findOne({ email }).select('+password');
   if (!user || !(await user.correctPassword(password, user.password))) {
     return res.status(401).json({
@@ -52,9 +58,11 @@ exports.login = catchAsync(async (req, res, next) => {
   };
   
   const token = signToken(user._id);
+
+  // Never send the stored password hash back to the client.
   user.password = undefined;
 
-  // If the password and email is correct
+  // Send the token and safe user data after successful authentication.
   res.status(200).json({
     status: 'success',
     token,
@@ -64,37 +72,66 @@ exports.login = catchAsync(async (req, res, next) => {
   })
 });
 
+// Protect routes by verifying the user's JWT and confirming the account is still authorized.
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
 
-  // Extract the token from req.headers.authorization (with the startsWith('Bearer') check)
+  // Extract the JWT from the Authorization header.
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1]
   };
 
-  // If do not haved a right token, do not have an access to the routes... 
+  // Block access when the request does not contain a token.
   if (!token) {
     return next(new AppError('Failed to acces, Please login to access this route...', 401));
   }
 
-  // Verify the token with jwt.verify(promisified) -> decoded
+  // Verify the token and decode its payload, including the user's ID.
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET_KEY);
 
-  // Find the current User by decoded.id
+  // Load the current user so the account and password status can be checked.
   const currentUser = await User.findById(decoded.id);
 
-  // If the token no longer exists Unauthorized the user... 
+  // Reject tokens belonging to a deleted or unavailable user.
   if (!currentUser) {
     return next(new AppError('User no longer exists...', 401));
   }
   
-  // Check the changedPasswordAfter if it the password has been changed before the protect grant the access...
+  // Reject tokens issued before the user's most recent password change.
   if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(new AppError('User recently changed the password, Please try to login again...', 401));
   }
 
-  // Grant Access to protected Route and pass it to the user request...
+  // Attach the authenticated user to the request for protected routes.
   req.user = currentUser;
 
+  // Continue to the protected route handler.
   next();
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  // 1. Get user from collection, including password
+  const user = await User.findById(req.user.id).select('+password');
+
+  // 2. Check if POSTed current password is correct
+  // (if wrong, use AppError with an appropriate status code)
+  if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
+    return next(new AppError('Your current password is not correct, Please try again...', 401))
+  }
+
+  // 3. If correct, update the password (set user.password and user.passwordConfirm from req.body, then .save())
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  await user.save();
+
+  // 4. Log user in, send new JWT (since changing password should issue a fresh token)
+  const token = signToken(user.id);
+
+  res.status(200).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  });
 });

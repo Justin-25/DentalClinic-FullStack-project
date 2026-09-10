@@ -109,6 +109,16 @@ userSchema.pre('save', async function() {
   this.passwordConfirm = undefined
 });
 
+// Record when an existing user's password changes so previously issued JWTs can be invalidated.
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) {
+    return next();
+  }
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next()
+});
+
 // when a patient/doctor "deletes" their account,
 // real apps usually don't actually delete the document from the database (losing appointment history, reviews, etc. tied to them). 
 // Instead, they flip active to false — a "soft delete."
@@ -120,10 +130,13 @@ userSchema.pre(/^find/, function(next) {
 })
 
 // Instance Methods
+// Compare the plain-text password provided during login with the stored hash.
 userSchema.methods.correctPassword = async function(inputPassword, userPassword) {
   return await bcrypt.compare(inputPassword, userPassword);
 }
 
+// Return true when the JWT was issued before this user's password was changed.
+// This lets authentication middleware reject tokens created with the old password.
 userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
   if (this.passwordChangedAt) {
     const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
