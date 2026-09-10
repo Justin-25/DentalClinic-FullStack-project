@@ -66,9 +66,8 @@ serviceSchema.virtual('appointments', {
 // turning something like "Root Canal Therapy" into a clean,
 // URL-friendly string like "root-canal-therapy"
 // used for things like /api/services/root-canal-therapy instead of an ObjectId in the URL.
-serviceSchema.pre('save', function(next) {
+serviceSchema.pre('save', function() {
   this.slug = slugify(this.name, { lower: true })
-  next(); 
 });
 
 const Service = mongoose.model('Service', serviceSchema);

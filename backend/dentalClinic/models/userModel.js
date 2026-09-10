@@ -110,23 +110,21 @@ userSchema.pre('save', async function() {
 });
 
 // Record when an existing user's password changes so previously issued JWTs can be invalidated.
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function() {
   if (!this.isModified('password') || this.isNew) {
-    return next();
+    return;
   }
 
   this.passwordChangedAt = Date.now() - 1000;
-  next()
 });
 
 // when a patient/doctor "deletes" their account,
 // real apps usually don't actually delete the document from the database (losing appointment history, reviews, etc. tied to them). 
 // Instead, they flip active to false — a "soft delete."
-userSchema.pre(/^find/, function(next) {
+userSchema.pre(/^find/, function() {
   this.find({
     active: { $ne: false }
   });
-  next();
 })
 
 // Instance Methods
