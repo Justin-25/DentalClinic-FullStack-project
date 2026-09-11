@@ -3,6 +3,7 @@ const { promisify } = require('util');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const sendEmail = require('../utils/email');
 
 // Create a JWT containing the user's ID so it can be used for authentication.
 const signToken = id => {
@@ -138,5 +139,40 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-  //
+  // Get user based on POSTed email
+  const user = await User.findOne({ email: req.body.email });
+
+  if (user) {
+    // Generate the random reset token (using the instance method)
+    // Save it to the database (skip validation)
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+    
+    try {
+      // Send it to user's email
+      const resetURL = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`;
+
+      await sendEmail({
+        email: user.email,
+        subject: 'Your password reset token (valid for 10 minutes only)...',
+        message: `Forgot your password? Submit a new password to: ${resetURL}\nIf you didn't request this, please ignore this email.`
+      })
+    
+    } catch (error) {
+      // if sending email fails, clear the reset fields and save again, then return an error
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+  
+      await user.save({ validateBeforeSave: false });
+      
+      return next(new AppError('There was an error sending the email. Try again later!', 500));
+    }
+  }
+
+  // This runs identically whether or not `user` existed
+  // no information leaked either way.
+  res.status(200).json({
+    status: 'success',
+    message: 'If an account with that email exists, a reset link has been sent.'
+  })
 })

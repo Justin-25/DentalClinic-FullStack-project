@@ -147,6 +147,7 @@ userSchema.methods.changedPasswordAfter = function(JWTTimeStamp) {
   return false;
 }
 
+// Generate a temporary password-reset token, store only its hash, and expire it after 10 minutes.
 userSchema.methods.createPasswordResetToken = function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
 
