@@ -1,9 +1,17 @@
 const express = require('express');
+const helmet = require('helmet');
+const limiter = require('./utils/limiter');
 
 const userRoutes = require('./routes/userRoutes');
 
 // Start express app
 const app = express();
+
+// injects security headers into every response
+app.use(helmet());
+
+// Global Limiter
+app.use('/api', limiter.globalLimiter);
 
 // Body parser - reads incoming JSON and converts to req.body
 app.use(express.json({ limit: '10kb' }));

@@ -1,5 +1,6 @@
 const express = require('express');
 const authController = require('../controllers/authController');
+const limiter = require('../utils/limiter');
 
 const router = express.Router();
 
@@ -7,8 +8,9 @@ const router = express.Router();
 
 // Authentication
 router.post('/signup', authController.signup);
-router.post('/login', authController.login);
-router.post('/forgotPassword', authController.forgotPassword);
+
+router.post('/login', limiter.loginLimiter, authController.login);
+router.post('/forgotPassword', limiter.forgotPasswordLimiter, authController.forgotPassword);
 router.post('/resetPassword/:token', authController.resetPassword);
 
 // PROTECTED ROUTES
