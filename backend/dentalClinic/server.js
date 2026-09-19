@@ -5,6 +5,9 @@ const dns = require('dns');
 // Change DNS for mongoDB to connect to Atlas
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
+// SanitizeFilter
+mongoose.set('sanitizeFilter', true);
+
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
