@@ -6,29 +6,27 @@ const rateLimitHandler = (req, res, next, options) => {
 };
 
 const globalLimiter = rateLimit({
-  windowMs: 1 * 60 * 60 * 1000,
-  limit: 100,
+  windowMs: 15 * 60 * 1000,
+  limit: 2400,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
-  ipv6Subnet: 56,
   handler: rateLimitHandler
 });
 
 const loginLimiter = rateLimit({
   windowMs: 1 * 60 * 60 * 1000,
   limit: 5,
-  standardHeaders: 'draft-8',
-  legacyHeaders: true,
-  ipv6Subnet: 56,
+  standardHeaders: false,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
   handler: rateLimitHandler
 });
 
 const forgotPasswordLimiter = rateLimit({
   windowMs: 1 * 60 * 60 * 1000,
   limit: 3,
-  standardHeaders: 'draft-8',
-  legacyHeaders: true,
-  ipv6Subnet: 56,
+  standardHeaders: false,
+  legacyHeaders: false,
   handler: rateLimitHandler
 });
 
