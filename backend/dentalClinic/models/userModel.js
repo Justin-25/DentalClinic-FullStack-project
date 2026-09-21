@@ -28,8 +28,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'A user must have a password...'],
-      minlength: 8,
-      select: false // Based on my understanding this will not be displayed on responses
+      minlength: [8, 'A user password must have at least 8 characters...'],
     },
     passwordConfirm: {
       type: String,
@@ -39,7 +38,7 @@ const userSchema = new mongoose.Schema(
         validator: function(el) {
           return el === this.password
         },
-        message: 'Password do not match! Please try again...'
+        message: 'Passwords do not match! Please try again...'
       }
     },
     specialization: {
@@ -56,11 +55,20 @@ const userSchema = new mongoose.Schema(
     active: {
       type: Boolean,
       default: true,
-      select: false // Based on my understanding on natours course, this will only display on DB compass not on responses.
     },
   },
   {
-    toJSON: { virtuals: true },
+    toJSON: { 
+      virtuals: true,
+      transform: (doc, ret) => {
+        delete ret.password;
+        delete ret.active;
+        delete ret.passwordChangedAt;
+        delete ret.passwordResetExpires;
+        delete ret.passwordResetToken;
+        return ret;
+      }
+    },
     toObject: { virtuals: true}
   }
 );

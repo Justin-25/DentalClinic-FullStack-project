@@ -1,6 +1,7 @@
 const express = require('express');
 const authController = require('../controllers/authController');
 const limiter = require('../utils/limiter');
+const userController = require('../controllers/userController');
 
 const router = express.Router();
 
@@ -19,6 +20,11 @@ router.use(authController.protect);
 
 // Authentication
 router.patch('/updateMyPassword', authController.updatePassword);
+
+// User
+router.get('/myAccount', userController.myAccount);
+router.patch('/myAccount', userController.updateMyAccount);
+router.delete('/myAccount', userController.deleteMyAccount);
 
 
 module.exports = router;

@@ -106,6 +106,16 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError('You do not have permission to access this...', 403, ErrorCodes.AUTHORIZATION_FAILURE))
+    }
+    next()
+  }
+}
+
 exports.updatePassword = catchAsync(async (req, res, next) => {
   // 1. Get user from collection, including password
   const user = await User.findById(req.user.id).select('+password');
