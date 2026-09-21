@@ -5,6 +5,7 @@ const limiter = require('./utils/limiter');
 const userRoutes = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
 const errorController = require('./controllers/errorController');
+const ErrorCodes = require('./utils/errorCodes');
 
 // Start express app
 const app = express();
@@ -23,7 +24,7 @@ app.use('/api/users', userRoutes);
 
 // 404 route
 app.use((req, res, next) => {
-  next(new AppError(`Url not found ${req.originalUrl}...`, 404));
+  next(new AppError(`Url not found ${req.originalUrl}...`, 404, ErrorCodes.ROUTE_NOT_FOUND));
 });
 
 // Global Error Handler

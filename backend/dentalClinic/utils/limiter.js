@@ -1,8 +1,9 @@
 const { rateLimit } = require('express-rate-limit');
 const AppError = require('./appError');
+const ErrorCodes = require('./errorCodes');
 
 const rateLimitHandler = (req, res, next, options) => {
-  next(new AppError('Too many requests, Please try again later...', options.statusCode));
+  next(new AppError('Too many requests, Please try again later...', options.statusCode, ErrorCodes.RATE_LIMITED));
 };
 
 const globalLimiter = rateLimit({

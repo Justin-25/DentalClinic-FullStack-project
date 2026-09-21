@@ -5,6 +5,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
+const ErrorCodes = require('../utils/errorCodes');
 
 // Create a JWT containing the user's ID so it can be used for authentication.
 const signToken = id => {
@@ -44,19 +45,13 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // Check if the email and password exist
   if (!email || !password) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Please provide email and password!'
-    })
+    return next(new AppError('Please provide email and password!', 400, ErrorCodes.MISSING_CREDENTIALS))
   }
 
   // Include the password hash because it is hidden by the user schema by default.
   const user = await User.findOne({ email }).select('+password');
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'Incorrect email or password!'
-    })
+    return next(new AppError('Incorrect email or password!', 401, ErrorCodes.INVALID_CREDENTIALS))
   };
   
   const token = signToken(user._id);
@@ -85,7 +80,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // Block access when the request does not contain a token.
   if (!token) {
-    return next(new AppError('Failed to acces, Please login to access this route...', 401));
+    return next(new AppError('Failed to access, Please login to access this route...', 401, ErrorCodes.AUTH_REQUIRED));
   }
 
   // Verify the token and decode its payload, including the user's ID.
@@ -96,12 +91,12 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // Reject tokens belonging to a deleted or unavailable user.
   if (!currentUser) {
-    return next(new AppError('User no longer exists...', 401));
+    return next(new AppError('User no longer exists...', 401, ErrorCodes.TOKEN_INVALID));
   }
   
   // Reject tokens issued before the user's most recent password change.
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(new AppError('User recently changed the password, Please try to login again...', 401));
+    return next(new AppError('User recently changed the password, Please try to login again...', 401, ErrorCodes.PASSWORD_CHANGED));
   }
 
   // Attach the authenticated user to the request for protected routes.
@@ -119,7 +114,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // (if wrong, use AppError with an appropriate status code)
   const currentPassword = req.body.currentPassword;
   if (!(await user.correctPassword(currentPassword, user.password))) {
-    return next(new AppError('Your current password is not correct, Please try again...', 401))
+    return next(new AppError('Your current password is not correct, Please try again...', 401, ErrorCodes.INCORRECT_PASSWORD))
   }
 
   // 3. If correct, update the password (set user.password and user.passwordConfirm from req.body, then .save())
@@ -166,7 +161,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   
       await user.save({ validateBeforeSave: false });
       
-      return next(new AppError('There was an error sending the email. Try again later!', 500));
+      return next(new AppError('There was an error sending the email. Try again later!', 500, ErrorCodes.EMAIL_SEND_FAILED));
     }
   }
 
@@ -193,7 +188,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   // Reject invalid or expired reset tokens.
   if(!user) {
-    return next(new AppError('Token is invalid or has expired', 400))
+    return next(new AppError('Token is invalid or has expired', 400, ErrorCodes.RESET_TOKEN_INVALID))
   }
 
   // Save the new password and clear the one-time reset credentials.

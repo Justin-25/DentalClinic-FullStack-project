@@ -3,33 +3,39 @@ const ErrorCodes = require('../utils/errorCodes');
 
 const handleCastError = err => {
   const message = `Invalid value for ${err.path}. Please check your input.`;
-  return new AppError(message, 400);
+  return new AppError(message, 400, ErrorCodes.INVALID_INPUT);
 }
 
 const handleJsonWebTokenError = () => {
   const message = 'Invalid token. Please log in again.';
-  return new AppError(message, 401);
+  return new AppError(message, 401, ErrorCodes.TOKEN_INVALID);
 }
 
 const handleTokenExpiredError = () => {
   const message = 'Your session has expired. Please log in again.';
-  return new AppError(message, 401);
+  return new AppError(message, 401, ErrorCodes.TOKEN_EXPIRED);
 }
 
 const handleValidationError = err => {
   const messages = Object.values(err.errors).map(el => el.message).join(' | ');
   const message = `Invalid input data. ${messages}`;
-  return new AppError(message, 400);
+  return new AppError(message, 400, ErrorCodes.VALIDATION_FAILED);
 }
 
 const handleBodyParserFailedError = () => {
   const message = 'The request body contains invalid JSON. Please check the format and try again.';
-  return new AppError(message, 400);
+  return new AppError(message, 400, ErrorCodes.INVALID_JSON);
 }
 
 const handleBodyParserLargeError = () => {
   const message = 'The request body is too large. Please send less data and try again.';
-  return new AppError(message, 413);
+  return new AppError(message, 413, ErrorCodes.PAYLOAD_TOO_LARGE);
+}
+
+const handleDuplicateFieldsError = err => {
+  const field = Object.keys(err.keyValue)[0]
+  const message = `This ${field} is already in use. Please use a different one.`;
+  return new AppError(message, 409, ErrorCodes.DUPLICATE_VALUE);
 }
 
 module.exports = (err, req, res, next) => {
@@ -40,6 +46,7 @@ module.exports = (err, req, res, next) => {
   if (err.name === 'TokenExpiredError') error = handleTokenExpiredError();
   if (err.type === 'entity.parse.failed') error = handleBodyParserFailedError();
   if (err.type === 'entity.too.large') error = handleBodyParserLargeError();
+  if (err.code === 11000) error = handleDuplicateFieldsError(err);
 
   // Status Code defaults to 500
   error.statusCode = error.statusCode || 500;
