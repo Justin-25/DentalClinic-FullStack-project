@@ -21,6 +21,7 @@ module.exports = Object.freeze({
   // REQUEST (The request itself, before your logic runs)
   ROUTE_NOT_FOUND: 'ROUTE_NOT_FOUND',
   RATE_LIMITED: 'RATE_LIMITED',
+  RESOURCE_NOT_FOUND: 'RESOURCE_NOT_FOUND',
 
   // SERVER (Something on your side)
   EMAIL_SEND_FAILED: 'EMAIL_SEND_FAILED',

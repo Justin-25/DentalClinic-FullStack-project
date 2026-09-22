@@ -21,10 +21,17 @@ router.use(authController.protect);
 // Authentication
 router.patch('/updateMyPassword', authController.updatePassword);
 
-// User
+// User Side
 router.get('/myAccount', userController.myAccount);
 router.patch('/myAccount', userController.updateMyAccount);
 router.delete('/myAccount', userController.deleteMyAccount);
 
+// Admin Side
+router.use(authController.restrictTo('admin'));
+
+router.get('/', userController.getAllUsers);
+router.get('/:userId', userController.getUser);
+router.patch('/:userId', userController.updateUser);
+router.delete('/:userId', userController.deleteUser);
 
 module.exports = router;

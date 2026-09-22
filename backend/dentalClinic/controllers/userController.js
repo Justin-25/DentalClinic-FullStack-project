@@ -46,7 +46,7 @@ exports.updateMyAccount = catchAsync(async (req, res, next) => {
     data: {
       user: updatedUser
     }
-  })
+  });
 });
 
 exports.deleteMyAccount = catchAsync(async (req, res, next) => {
@@ -54,5 +54,62 @@ exports.deleteMyAccount = catchAsync(async (req, res, next) => {
     active: false
   });
 
-  res.status(204)
+  res.status(204).json({});
+});
+
+exports.getAllUsers = catchAsync(async (req, res, next) => {
+  const users = await User.find();
+
+  res.status(200).json({
+    status: 'success',
+    results: users.length,
+    data: {
+      users
+    }
+  });
+});
+
+exports.getUser = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.userId);
+
+  if(!user) {
+    return next(new AppError('The server cannot find this user...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
+});
+
+exports.updateUser = catchAsync(async (req, res, next) => {
+  const allowed = ['name', 'email', 'photo'];
+
+  const filteredBody = filterObj(req.body, 'role', 'active', ...allowed);
+
+  const user = await User.findByIdAndUpdate(req.params.userId, filteredBody, {
+    returnDocument: 'after',
+    runValidators: true
+  });
+
+  if (!user) {
+    return next(new AppError('specific data or endpoint you asked for does not exist.', 404, ErrorCodes.RESOURCE_NOT_FOUND));
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user
+    }
+  });
+});
+
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.params.userId, {
+    active: false
+  });
+
+  res.status(204).json({});
 });
