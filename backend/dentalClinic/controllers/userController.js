@@ -54,7 +54,7 @@ exports.deleteMyAccount = catchAsync(async (req, res, next) => {
     active: false
   });
 
-  res.status(204).json({});
+  res.status(204).send();
 });
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
@@ -111,5 +111,5 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
     active: false
   });
 
-  res.status(204).json({});
+  res.status(204).send();
 });

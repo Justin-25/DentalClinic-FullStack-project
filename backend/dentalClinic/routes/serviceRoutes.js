@@ -4,6 +4,10 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
+// Admin Side Only
+router.get('/admin', authController.protect, authController.restrictTo('admin'), serviceController.getAllServicesAdmin);
+router.get('/admin/:serviceId', authController.protect, authController.restrictTo('admin'), serviceController.getServiceAdmin);
+
 // Public Routes
 // Client Side
 router.get('/', serviceController.getAllServices);
