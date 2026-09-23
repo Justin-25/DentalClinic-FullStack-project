@@ -48,10 +48,15 @@ const serviceSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
       select: false
+    },
+    active: {
+      type: Boolean,
+      default: true,
+      select: false
     }
   },
   {
-    toJSON: { virtuals: true},
+    toJSON: { virtuals: true },
     toObject: { virtuals: true}
   }
 );
@@ -67,7 +72,16 @@ serviceSchema.virtual('appointments', {
 // URL-friendly string like "root-canal-therapy"
 // used for things like /api/services/root-canal-therapy instead of an ObjectId in the URL.
 serviceSchema.pre('save', function() {
-  this.slug = slugify(this.name, { lower: true })
+  this.slug = slugify(this.name, { lower: true, strict: true })
+});
+
+// Soft-delete Service middleware
+serviceSchema.pre(/^find/, function() {
+  this.find({
+    active: mongoose.trusted({
+      $ne: false
+    })
+  })
 });
 
 const Service = mongoose.model('Service', serviceSchema);

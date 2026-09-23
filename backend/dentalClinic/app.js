@@ -2,10 +2,11 @@ const express = require('express');
 const helmet = require('helmet');
 
 const limiter = require('./utils/limiter');
-const userRoutes = require('./routes/userRoutes');
 const AppError = require('./utils/appError');
 const errorController = require('./controllers/errorController');
 const ErrorCodes = require('./utils/errorCodes');
+const userRoutes = require('./routes/userRoutes');
+const serviceRoutes = require('./routes/serviceRoutes');
 
 // Start express app
 const app = express();
@@ -21,6 +22,7 @@ app.use(express.json({ limit: '10kb' }));
 
 // ROUTES
 app.use('/api/users', userRoutes);
+app.use('/api/services', serviceRoutes)
 
 // 404 route
 app.use((req, res, next) => {
