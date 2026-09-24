@@ -7,6 +7,7 @@ const errorController = require('./controllers/errorController');
 const ErrorCodes = require('./utils/errorCodes');
 const userRoutes = require('./routes/userRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
+const scheduleRoutes = require('./routes/scheduleRoutes');
 
 // Start express app
 const app = express();
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 // ROUTES
 app.use('/api/users', userRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/schedules', scheduleRoutes);
 
 // 404 route
 app.use((req, res, next) => {

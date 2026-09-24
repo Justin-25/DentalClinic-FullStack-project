@@ -16,11 +16,13 @@ const scheduleSchema = new mongoose.Schema(
       },
       startTime: {
         type: String,
-        required: true
+        required: true,
+        match: [/^([01]\d|2[0-3]):[0-5][0-9]$/, 'Start time must be in HH:mm format...']
       },
       endTime: {
         type: String,
-        required: true
+        required: true,
+        match: [/^([01]\d|2[0-3]):[0-5][0-9]$/, 'End time must be in HH:mm format...']
       }
     }],
     exceptions: [
@@ -38,6 +40,29 @@ const scheduleSchema = new mongoose.Schema(
     ]
   }
 );
+
+scheduleSchema.pre('validate', function() {
+  const scheds = this.weeklyAvailability;
+
+  for (const sched of scheds) {
+    if (sched.startTime >= sched.endTime) {
+      return this.invalidate('weeklyAvailability', `${sched.day}: endTime (${sched.endTime}) must be after startTime (${sched.startTime})`);
+    }
+  }
+
+  for (let i = 0; i < scheds.length; i++) {
+    for (let j = i + 1; j < scheds.length; j++) {
+      const a = scheds[i];
+      const b = scheds[j];
+
+      if (a.day !== b.day) continue;
+
+      if (a.startTime < b.endTime && b.startTime < a.endTime) {
+        return this.invalidate('weeklyAvailability', `${a.day}: ${a.startTime}-${a.endTime} overlaps ${b.startTime}-${b.endTime}`);
+      }
+    }
+  }
+})
 
 const Schedule = mongoose.model('Schedule', scheduleSchema);
 
