@@ -75,12 +75,12 @@ serviceSchema.pre('save', function() {
   this.slug = slugify(this.name, { lower: true, strict: true })
 });
 
-// Soft-delete Service middleware
+// Skip the filter when the caller asks for inactive records,
 serviceSchema.pre(/^find/, function() {
+  if (this.getOptions().includeInactive) return;
+
   this.find({
-    active: mongoose.trusted({
-      $ne: false
-    })
+    active: mongoose.trusted({ $ne: false })
   })
 });
 

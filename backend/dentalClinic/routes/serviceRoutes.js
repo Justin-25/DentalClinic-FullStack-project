@@ -7,6 +7,7 @@ const router = express.Router();
 // Admin Side Only
 router.get('/admin', authController.protect, authController.restrictTo('admin'), serviceController.getAllServicesAdmin);
 router.get('/admin/:serviceId', authController.protect, authController.restrictTo('admin'), serviceController.getServiceAdmin);
+router.patch('/admin/restore/:serviceId', authController.protect, authController.restrictTo('admin'), serviceController.restoreService);
 
 // Public Routes
 // Client Side

@@ -19,10 +19,14 @@ app.use('/api', limiter.globalLimiter);
 
 // Body parser - reads incoming JSON and converts to req.body
 app.use(express.json({ limit: '10kb' }));
+app.use((req, res, next) => {
+  req.body = req.body || {};
+  next();
+});
 
 // ROUTES
 app.use('/api/users', userRoutes);
-app.use('/api/services', serviceRoutes)
+app.use('/api/services', serviceRoutes);
 
 // 404 route
 app.use((req, res, next) => {

@@ -45,7 +45,7 @@ exports.getService = catchAsync(async (req, res, next) => {
 
 // Get All Services
 exports.getAllServicesAdmin = catchAsync(async (req, res, next) => {
-  const services = await Service.find();
+  const services = await Service.find().select('+active').setOptions({ includeInactive: true });
 
   res.status(200).json({
     status: 'success',
@@ -58,7 +58,7 @@ exports.getAllServicesAdmin = catchAsync(async (req, res, next) => {
 
 // Get Service
 exports.getServiceAdmin = catchAsync(async (req, res, next) => {
-  const service = await Service.findById(req.params.serviceId);
+  const service = await Service.findById(req.params.serviceId).select('+active').setOptions({ includeInactive: true });
 
   if (!service) {
     return next(new AppError('Service not found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
@@ -92,7 +92,27 @@ exports.updateService = catchAsync(async (req, res, next) => {
     return next(new AppError('Service not found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
   }
 
-  service.set(req.body);
+  const { active, ...changes } = req.body;
+  service.set(changes);
+  await service.save();
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      service
+    }
+  });
+});
+
+// Restore Service
+exports.restoreService = catchAsync(async (req, res, next) => {
+  const service = await Service.findById(req.params.serviceId).setOptions({ includeInactive: true });
+
+  if (!service) {
+    return next(new AppError('Service not found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
+  }
+
+  service.active = true;
   await service.save();
 
   res.status(200).json({
