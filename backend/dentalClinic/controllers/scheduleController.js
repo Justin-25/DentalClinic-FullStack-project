@@ -8,7 +8,7 @@ exports.getDoctorSchedule = catchAsync(async (req, res, next) => {
   const doctor = await User.findById(req.params.doctorId);
 
   if (!doctor || doctor.role !== 'doctor') {
-    return next(new AppError(`No doctor found with this ID...`, 404, ErrorCodes.RESOURCE_NOT_FOUND));
+    return next(new AppError(`Doctor doesn't exists...`, 404, ErrorCodes.RESOURCE_NOT_FOUND));
   }
   
   const schedule = await Schedule.findOne({

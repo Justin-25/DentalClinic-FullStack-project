@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const timeFormat = require('../utils/timeFormat');
+const weekdays = require('../utils/weekdays');
 
 const scheduleSchema = new mongoose.Schema(
   {
@@ -11,18 +13,18 @@ const scheduleSchema = new mongoose.Schema(
     weeklyAvailability: [{
       day: {
         type: String,
-        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        enum: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         required: true
       },
       startTime: {
         type: String,
         required: true,
-        match: [/^([01]\d|2[0-3]):[0-5][0-9]$/, 'Start time must be in HH:mm format...']
+        match: [timeFormat, 'Start time must be in HH:mm format...']
       },
       endTime: {
         type: String,
         required: true,
-        match: [/^([01]\d|2[0-3]):[0-5][0-9]$/, 'End time must be in HH:mm format...']
+        match: [timeFormat, 'End time must be in HH:mm format...']
       }
     }],
     exceptions: [

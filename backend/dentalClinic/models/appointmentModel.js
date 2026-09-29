@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const timeFormat = require('../utils/timeFormat');
 
 const appointmentSchema = new mongoose.Schema(
   {
@@ -23,7 +24,16 @@ const appointmentSchema = new mongoose.Schema(
     },
     timeSlot: {
       type: String,
-      required: [true, 'An appointment must have a time slot...']
+      required: [true, 'An appointment must have a time slot...'],
+      match: [timeFormat, 'Time slot must be in HH:mm format']
+    },
+    duration: {
+      type: Number,
+      required: [true, 'An appointment must have a duration... ']
+    },
+    price: {
+      type: Number,
+      required: [true, 'An appointment must have a price...']
     },
     createdAt: {
       type: Date,
