@@ -8,6 +8,12 @@ const weekdays = require('../utils/weekdays');
 const catchAsync = require('../utils/catchAsync');
 const addMinutes = require('../utils/addMinutes');
 
+const ALLOWED_STATUS_BY_ROLE = {
+  patient: ['cancelled'],
+  doctor: ['confirmed', 'completed', 'no-show'],
+  admin: ['pending', 'confirmed', 'completed', 'cancelled', 'no-show']
+};
+
 exports.createAppointment = catchAsync(async (req, res, next) => {
   const doctor = await User.findById(req.body.doctor);
 
@@ -77,5 +83,101 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
     data: {
       appointment
     }
-  })
-})
+  });
+});
+
+exports.getMyAppointments = catchAsync(async (req, res, next) => {
+  const filter = req.user.role === 'doctor' ? { doctor: req.user.id } : { patient: req.user.id };
+
+  const appointments = await Appointment.find(filter)
+    .populate('doctor', 'name specialization')
+    .populate('patient', 'name')
+    .populate('service', 'name')
+
+  res.status(200).json({
+    status: 'success',
+    results: appointments.length,
+    data: {
+      appointments
+    }
+  });
+});
+
+exports.getAllAppointments = catchAsync(async (req, res, next) => {
+  const appointments = await Appointment.find()
+    .populate('doctor', 'name specialization')
+    .populate('patient', 'name')
+    .populate('service', 'name')
+
+  res.status(200).json({
+    status: 'success',
+    results: appointments.length,
+    data: {
+      appointments
+    }
+  });
+});
+
+exports.getAppointment = catchAsync(async (req, res, next) => {
+  const appointment = await Appointment.findById(req.params.id);
+
+  if (!appointment) {
+    return next(new AppError('No appointments were found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
+  }
+
+  const isOwner = req.user.role === 'admin'
+    || String(appointment.patient) === req.user.id
+    || String(appointment.doctor) === req.user.id
+
+  if (!isOwner) {
+    return next(new AppError('No appointments were found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
+  }
+
+  await appointment.populate('doctor', 'name specialization');
+  await appointment.populate('patient', 'name');
+  await appointment.populate('service', 'name');
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      appointment
+    }
+  });
+});
+
+exports.updateAppointmentStatus = catchAsync(async (req, res, next) => {
+  const appointment = await Appointment.findById(req.params.id);
+
+  if (!appointment) {
+    return next(new AppError('No appointments were found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
+  }
+
+  const isOwner = req.user.role === 'admin'
+    || String(appointment.patient) === req.user.id
+    || String(appointment.doctor) === req.user.id
+
+  if (!isOwner) {
+    return next(new AppError('No appointments were found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
+  }
+
+  const allowed = ALLOWED_STATUS_BY_ROLE[req.user.role];
+
+  if (!allowed.includes(req.body.status)) {
+    return next(new AppError('Only authorized personnel can update this status...', 403, ErrorCodes.AUTHORIZATION_FAILURE));
+  }
+
+  appointment.status = req.body.status;
+
+  if (req.body.status === 'cancelled') {
+    appointment.cancellationReason = req.body.cancellationReason;
+  }
+
+  await appointment.save();
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      appointment
+    }
+  });
+});

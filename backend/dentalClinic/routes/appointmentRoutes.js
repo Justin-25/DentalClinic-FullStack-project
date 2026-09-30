@@ -7,10 +7,17 @@ const router = express.Router();
 // Protected Routes
 router.use(authController.protect);
 
-// Patient Only
-router.use(authController.restrictTo('patient'))
+// Public Routes
+router.get('/myAppointments', appointmentController.getMyAppointments);
+router.get('/:id', appointmentController.getAppointment);
+router.patch('/:id/status', appointmentController.updateAppointmentStatus);
 
-// Appointment
-router.post('/', appointmentController.createAppointment);
+// Patient Only
+// Create Appointment
+router.post('/', authController.restrictTo('patient'), appointmentController.createAppointment);
+
+// Admin Only
+// Get All Appointments
+router.get('/', authController.restrictTo('admin'), appointmentController.getAllAppointments);
 
 module.exports = router;

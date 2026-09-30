@@ -45,9 +45,17 @@ const appointmentSchema = new mongoose.Schema(
       enum: ['pending', 'confirmed', 'completed', 'cancelled', 'no-show'],
       default: 'pending'
     },
-    notes: String
+    cancellationReason: {
+      type: String
+    }
   }
 );
+
+appointmentSchema.index({
+  doctor: 1,
+  date: 1,
+  timeSlot: 1
+}, { unique: true });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);
 
