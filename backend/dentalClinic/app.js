@@ -31,6 +31,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // 404 route
 app.use((req, res, next) => {

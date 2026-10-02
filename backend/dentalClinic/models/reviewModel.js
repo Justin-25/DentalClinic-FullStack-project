@@ -48,3 +48,7 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.index({ doctor: 1, patient: 1 }, { unique: true });
+
+const Review = mongoose.model('Review', reviewSchema);
+
+module.exports = Review;
