@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/userModel');
 const Service = require('../models/serviceModel');
 const Appointment = require('../models/appointmentModel');
@@ -56,7 +57,7 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
   const existingAppointments = await Appointment.find({
     doctor: req.body.doctor,
     date: new Date(req.body.date),
-    status: { $ne: 'cancelled'}
+    status: mongoose.trusted({ $ne: 'cancelled'})
   });
 
   const conflict = existingAppointments.find((existing) => {

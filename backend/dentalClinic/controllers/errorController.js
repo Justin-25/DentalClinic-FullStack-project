@@ -33,8 +33,10 @@ const handleBodyParserLargeError = () => {
 }
 
 const handleDuplicateFieldsError = err => {
-  const field = Object.keys(err.keyValue)[0]
-  const message = `This ${field} is already in use. Please use a different one.`;
+  const field = Object.keys(err.keyValue);
+  const message = field.length > 1 
+  ? `This combination of ${field.join(', ')} is already in use. Please choose different ${field.join(', ')}...`
+  : `This ${field} is already in use. Please use a different one.`;
   return new AppError(message, 409, ErrorCodes.DUPLICATE_VALUE);
 }
 

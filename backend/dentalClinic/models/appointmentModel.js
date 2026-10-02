@@ -55,7 +55,12 @@ appointmentSchema.index({
   doctor: 1,
   date: 1,
   timeSlot: 1
-}, { unique: true });
+}, { 
+  unique: true, 
+  partialFilterExpression: { 
+    status: mongoose.trusted({ $ne: 'cancelled' }) 
+  }
+});
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);
 
