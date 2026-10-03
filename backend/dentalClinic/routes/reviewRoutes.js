@@ -14,3 +14,5 @@ router.use(authController.protect);
 router.post('/', authController.restrictTo('patient'), reviewController.createReview);
 router.patch('/:id', reviewController.updateReview);
 router.delete('/:id', reviewController.deleteReview);
+
+module.exports = router;

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -30,24 +29,33 @@ const reviewSchema = new mongoose.Schema(
     doctor: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
-      validate: {
-        validator: function(e) {
-          if (this.type === 'doctor') {
-            return e;
-          }
-          return true; // clinic reviews don't need this to check if fail
-        },
-        message: "A doctor review must specify which doctor it's for..."
-      }
+      required: [
+        function () {
+          return this.type === 'doctor'
+        }, "A doctor review must specify which doctor it's for..."
+      ]
     },
     appointment: {
       type: mongoose.Schema.ObjectId,
       ref: 'Appointment',
+      required: [true, 'You must have a complete appointment before you can leave a review... ']
     }
   }
 );
 
-reviewSchema.index({ doctor: 1, patient: 1 }, { unique: true });
+reviewSchema.index({ 
+  patient: 1 
+}, { 
+  unique: true, 
+  partialFilterExpression: { type: 'clinic'  }
+});
+
+reviewSchema.index({ 
+  appointment: 1 
+}, { 
+  unique: true, 
+  partialFilterExpression: { type: 'doctor'  }
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 

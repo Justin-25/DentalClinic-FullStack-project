@@ -6,28 +6,26 @@ const ErrorCodes = require('../utils/errorCodes');
 
 
 exports.createReview = catchAsync(async (req, res, next) => {
-  const query = {
-    patient: req.user.id,
-    status: 'completed'
-  };
+  const appointment = await Appointment.findById(req.body.appointment);
 
-  if (req.body.type === 'doctor') {
-    query.doctor = req.body.doctor;
+  // Step 2: missing OR not this patient's → hide it
+  if (!appointment || String(appointment.patient) !== req.user.id) {
+    return next(new AppError('Appointment not found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
   }
 
-  const qualifyingAppointment = await Appointment.findOne(query);
-
-  if (!qualifyingAppointment) {
+  // Step 3: only completed visits
+  if (appointment.status !== 'completed') {
     return next(new AppError('You can leave a review once your appointment is complete...', 403, ErrorCodes.REVIEW_NOT_ELIGIBLE));
   }
 
+  // Step 4: only review/rating/type come from the body
   const review = await Review.create({
     review: req.body.review,
     type: req.body.type,
     rating: req.body.rating,
-    doctor: req.body.doctor,
+    doctor: req.body.type === 'doctor' ? appointment.doctor : undefined,
     patient: req.user.id,
-    appointment: qualifyingAppointment._id
+    appointment: appointment.id
   });
 
   res.status(201).json({

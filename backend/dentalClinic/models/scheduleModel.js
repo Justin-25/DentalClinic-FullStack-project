@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const timeFormat = require('../utils/timeFormat');
-const weekdays = require('../utils/weekdays');
 
 const scheduleSchema = new mongoose.Schema(
   {
