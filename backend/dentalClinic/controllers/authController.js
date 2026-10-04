@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
 const crypto = require('crypto');
@@ -193,7 +194,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // Find the user only when the reset token matches and has not expired.
   const user = await User.findOne({
     passwordResetToken: hashedToken,
-    passwordResetExpires: { $gt: Date.now() }
+    passwordResetExpires: mongoose.trusted({ $gt: Date.now() })
   });
 
   // Reject invalid or expired reset tokens.
