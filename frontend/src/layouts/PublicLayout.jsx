@@ -1,15 +1,15 @@
-import { Link, Outlet } from "react-router";
+import { Outlet } from "react-router";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function PublicLayout() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header>
-        {/* logo + <Link>s to Services, Doctor, Log in, Book now */}
-      </header>
+      <Header />
       <main className="flex-1">
         <Outlet />
       </main>
-      <footer>{/* footer text for now */}</footer>
+      <Footer />
     </div>
   );
 }
