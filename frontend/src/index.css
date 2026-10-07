@@ -7,7 +7,7 @@
   --color-brand-dark: #125A62;  /*  slightly dark teal*/
   --color-ink: #1F2328;        /* main text */
   --color-footer: #22272C;     /* footer */
-  --ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 };
 
 /* Reveal: hidden state is only ever added by JavaScript */

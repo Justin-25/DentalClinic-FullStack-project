@@ -17,7 +17,7 @@ export default function Reveal({ children, delay = 0, className = "" }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          el.classList.remove("data-reveal");
+          el.classList.remove("reveal-hidden");
           observer.unobserve(el);
         }
       },
