@@ -4,20 +4,21 @@
   --color-brand: #17707A;      /* buttons, links, selected states */
   --color-brand-logo: #1F8A93; /* logo teal */
   --color-accent: #F2B84B;     /* gold sparkle, stars */
+  --color-brand-dark: #125A62;  /*  slightly dark teal*/
   --color-ink: #1F2328;        /* main text */
   --color-footer: #22272C;     /* footer */
   --ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
-}
+};
 
-/* Reavel: hidden state is only ever added by JavaScript */
+/* Reveal: hidden state is only ever added by JavaScript */
 .reveal-hidden {
   opacity: 0;
   transform: translateY(16px)
-}
+};
 
 [data-reveal] {
   transition: opacity 400ms var(--ease-soft), transform 400ms var(--ease-soft)
-}
+};
 
 
 /* Lift a card rises 2px; its shadow fades in (opacity only, so it stays smooth) */
@@ -28,7 +29,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    border-raduis: inherit;
+    border-radius: inherit;
     box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
     opacity: 0;
     transition: opacity 200ms var(--ease-soft);
@@ -37,7 +38,7 @@
   &:hover {
     transform: translateY(-2px);
   }
-  &hover::after {
+  &:hover::after {
     opacity: 1;
   }
 
@@ -46,4 +47,4 @@
       transform: none;
     }
   }
-}
+};
