@@ -6,4 +6,44 @@
   --color-accent: #F2B84B;     /* gold sparkle, stars */
   --color-ink: #1F2328;        /* main text */
   --color-footer: #22272C;     /* footer */
+  --ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Reavel: hidden state is only ever added by JavaScript */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(16px)
+}
+
+[data-reveal] {
+  transition: opacity 400ms var(--ease-soft), transform 400ms var(--ease-soft)
+}
+
+
+/* Lift a card rises 2px; its shadow fades in (opacity only, so it stays smooth) */
+@utility lift {
+  position: relative;
+  transition: transform 200ms var(--ease-soft);
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-raduis: inherit;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+    opacity: 0;
+    transition: opacity 200ms var(--ease-soft);
+    pointer-events: none;
+  }
+  &:hover {
+    transform: translateY(-2px);
+  }
+  &hover::after {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
+  }
 }
