@@ -2,6 +2,7 @@ const express = require('express');
 const limiter = require('../utils/limiter');
 const authController = require('../controllers/authController');
 const userController = require('../controllers/userController');
+const upload = require('../utils/upload');
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.patch('/updateMyPassword', authController.updatePassword);
 
 // User Side
 router.get('/myAccount', userController.myAccount);
-router.patch('/myAccount', userController.updateMyAccount);
+router.patch('/myAccount', upload.uploadUserPhoto, upload.resizeUserPhoto, userController.updateMyAccount);
 router.delete('/myAccount', userController.deleteMyAccount);
 
 // Admin Side

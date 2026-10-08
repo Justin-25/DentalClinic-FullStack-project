@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const path = require('path');
 
 const limiter = require('./utils/limiter');
 const AppError = require('./utils/appError');
@@ -18,6 +19,7 @@ const app = express();
 app.use(helmet());
 
 // Global Limiter
+app.use('/img', express.static(path.join(__dirname, 'public', 'img')))
 app.use('/api', limiter.globalLimiter);
 
 // Body parser - reads incoming JSON and converts to req.body

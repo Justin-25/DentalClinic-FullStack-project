@@ -40,6 +40,12 @@ const handleDuplicateFieldsError = err => {
   return new AppError(message, 409, ErrorCodes.DUPLICATE_VALUE);
 }
 
+const handleMulterError = err => {
+  return err.code === 'LIMIT_FILE_SIZE'
+    ? new AppError('Image must be 5 MB or smaller...', 413, ErrorCodes.PAYLOAD_TOO_LARGE)
+    : new AppError(err.message, 400, ErrorCodes.INVALID_INPUT)
+}
+
 module.exports = (err, req, res, next) => {
   let error = err;
   if (err.name === 'CastError') error = handleCastError(err);
@@ -49,6 +55,7 @@ module.exports = (err, req, res, next) => {
   if (err.type === 'entity.parse.failed') error = handleBodyParserFailedError();
   if (err.type === 'entity.too.large') error = handleBodyParserLargeError();
   if (err.code === 11000) error = handleDuplicateFieldsError(err);
+  if (err.name === 'MulterError') error = handleMulterError(err);
 
   // Status Code defaults to 500
   error.statusCode = error.statusCode || 500;

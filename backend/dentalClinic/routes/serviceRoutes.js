@@ -1,6 +1,7 @@
 const express = require('express');
 const serviceController = require('../controllers/serviceController');
 const authController = require('../controllers/authController');
+const upload = require('../utils/upload');
 
 const router = express.Router();
 
@@ -20,8 +21,8 @@ router.use(authController.protect);
 // Admin Side Only
 router.use(authController.restrictTo('admin'));
 
-router.post('/', serviceController.createService);
-router.patch('/:serviceId', serviceController.updateService);
+router.post('/', upload.uploadServiceCover, upload.resizeServiceCover, serviceController.createService);
+router.patch('/:serviceId', upload.uploadServiceCover, upload.resizeServiceCover, serviceController.updateService);
 router.delete('/:serviceId', serviceController.deleteService);
 
 module.exports = router;
