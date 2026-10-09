@@ -15,7 +15,22 @@ const ALLOWED_STATUS_BY_ROLE = {
   admin: ['pending', 'confirmed', 'completed', 'cancelled', 'no-show']
 };
 
+const ALLOWED_TRANSITIONS = {
+  pending: ['confirmed', 'cancelled'],
+  confirmed: ['completed', 'cancelled', 'no-show'],
+  completed: [],
+  cancelled: [],
+  'no-show': [],
+};
+
 exports.createAppointment = catchAsync(async (req, res, next) => {
+  const today = new Date().toISOString().slice(0, 10);
+  const requested = new Date(req.body.date).toISOString().slice(0, 10);
+
+  if (requested < today) {
+    return next(new AppError('You can only book today or a future date...', 400, ErrorCodes.INVALID_INPUT));
+  }
+
   const doctor = await User.findById(req.body.doctor);
 
   if (!doctor || doctor.role !== 'doctor') {
@@ -42,7 +57,7 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
     return next(new AppError('Doctor is currently on day off...', 400, ErrorCodes.SLOT_UNAVAILABE));
   }
 
-  const block = schedule.weeklyAvailability.find((b) => b.day === weekday && b.startTime <= req.body.timeSlot);
+  const block = schedule.weeklyAvailability.find((b) => b.day === weekday && b.startTime <= req.body.timeSlot && req.body.timeSlot < b.endTime);
 
   if (!block) {
     return next(new AppError('Schedule is not available...', 400, ErrorCodes.SLOT_UNAVAILABE));
@@ -160,11 +175,17 @@ exports.updateAppointmentStatus = catchAsync(async (req, res, next) => {
   if (!isOwner) {
     return next(new AppError('No appointments were found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
   }
-
+  
   const allowed = ALLOWED_STATUS_BY_ROLE[req.user.role];
 
   if (!allowed.includes(req.body.status)) {
     return next(new AppError('Only authorized personnel can update this status...', 403, ErrorCodes.AUTHORIZATION_FAILURE));
+  }
+
+  const isValidTransition = ALLOWED_TRANSITIONS[appointment.status].includes(req.body.status);
+
+  if (req.user.role !== 'admin' && !isValidTransition) {
+    return next(new AppError(`Can't change an appointment from ${appointment.status} to ${req.body.status}...`, 409, ErrorCodes.INVALID_STATUS_TRANSITION));
   }
 
   appointment.status = req.body.status;
