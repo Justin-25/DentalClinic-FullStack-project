@@ -51,7 +51,7 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
     return next(new AppError('Schedule not found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
   }
 
-  const isDayOff = schedule.exceptions.some((ex) => ex.date.getTime() ===  new Date(req.body.date).getTime() && ex.isAvailable === false)
+  const isDayOff = schedule.exceptions.some((ex) => ex.date.getTime() ===  new Date(req.body.date).getTime())
 
   if (isDayOff) {
     return next(new AppError('Doctor is currently on day off...', 400, ErrorCodes.SLOT_UNAVAILABE));

@@ -32,11 +32,7 @@ const scheduleSchema = new mongoose.Schema(
           type: Date,
           required: true
         },
-        reason: String,
-        isAvailable: {
-          type: Boolean,
-          default: false // usually false (day off), but could be true for a special extra day added
-        }
+        reason: String
       }
     ]
   }

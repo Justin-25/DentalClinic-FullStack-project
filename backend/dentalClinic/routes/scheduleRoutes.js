@@ -5,8 +5,10 @@ const scheduleController = require('../controllers/scheduleController');
 const router = express.Router();
 
 // Public Routes
-// patients need this to see availability when booking
+
+// Doctor Schedule AND Availability
 router.get('/:doctorId', scheduleController.getDoctorSchedule)
+router.get('/:doctorId/availability', scheduleController.getAvailability);
 
 // Protected Routes
 router.use(authController.protect);
