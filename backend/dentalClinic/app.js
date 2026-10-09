@@ -7,6 +7,7 @@ const AppError = require('./utils/appError');
 const errorController = require('./controllers/errorController');
 const ErrorCodes = require('./utils/errorCodes');
 const userRoutes = require('./routes/userRoutes');
+const doctorRoutes = require('./routes/doctorRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
@@ -31,6 +32,7 @@ app.use((req, res, next) => {
 
 // ROUTES
 app.use('/api/users', userRoutes);
+app.use('/api/doctors', doctorRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/appointments', appointmentRoutes);
