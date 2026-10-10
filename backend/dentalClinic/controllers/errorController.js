@@ -40,11 +40,11 @@ const handleDuplicateFieldsError = err => {
   return new AppError(message, 409, ErrorCodes.DUPLICATE_VALUE);
 }
 
-const handleMulterError = err => {
-  return err.code === 'LIMIT_FILE_SIZE'
+const handleMulterError = err => (
+  err.code === 'LIMIT_FILE_SIZE'
     ? new AppError('Image must be 5 MB or smaller...', 413, ErrorCodes.PAYLOAD_TOO_LARGE)
     : new AppError(err.message, 400, ErrorCodes.INVALID_INPUT)
-}
+)
 
 module.exports = (err, req, res, next) => {
   let error = err;

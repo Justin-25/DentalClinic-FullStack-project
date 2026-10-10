@@ -118,12 +118,17 @@ exports.restrictTo = (...roles) => {
 }
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
+  const currentPassword = req.body.currentPassword;
+  
+  if (!currentPassword) {
+    return next(new AppError('Please provide your current password...', 400, ErrorCodes.MISSING_CREDENTIALS));
+  }
+
   // 1. Get user from collection, including password
   const user = await User.findById(req.user.id).select('+password');
 
   // 2. Check if POSTed current password is correct
   // (if wrong, use AppError with an appropriate status code)
-  const currentPassword = req.body.currentPassword;
   if (!(await user.correctPassword(currentPassword, user.password))) {
     return next(new AppError('Your current password is not correct, Please try again...', 401, ErrorCodes.INCORRECT_PASSWORD))
   }
@@ -157,12 +162,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     
     try {
       // Send it to user's email
-      const resetURL = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`;
+      const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
       await sendEmail({
         email: user.email,
         subject: 'Your password reset token (valid for 10 minutes only)...',
-        message: `Forgot your password? Submit a new password to: ${resetURL}\nIf you didn't request this, please ignore this email.`
+        message: `Forgot your password? Reset your password here: ${resetURL} This link expires in 10 minutes.\nIf you didn't request this, please ignore this email.`
       })
     
     } catch (error) {

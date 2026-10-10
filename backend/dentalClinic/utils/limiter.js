@@ -14,6 +14,14 @@ const globalLimiter = rateLimit({
   handler: rateLimitHandler
 });
 
+const signUpLimiter = rateLimit({
+  windowMs: 1 * 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: false,
+  legacyHeaders: false,
+  handler: rateLimitHandler
+})
+
 const loginLimiter = rateLimit({
   windowMs: 1 * 60 * 60 * 1000,
   limit: 5,
@@ -31,4 +39,4 @@ const forgotPasswordLimiter = rateLimit({
   handler: rateLimitHandler
 });
 
-module.exports = ({ globalLimiter, loginLimiter, forgotPasswordLimiter });
+module.exports = ({ globalLimiter, signUpLimiter, loginLimiter, forgotPasswordLimiter });

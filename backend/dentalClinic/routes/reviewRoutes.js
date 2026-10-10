@@ -6,7 +6,8 @@ const router = express.Router();
 
 // Public Routes
 router.get('/', reviewController.getAllReviews);
-router.get('/:id', reviewController.getReview)
+router.get('/mine', authController.protect, authController.restrictTo('patient'), reviewController.getMyReviews);
+router.get('/:id', reviewController.getReview);
 
 // Protected Routes
 router.use(authController.protect);

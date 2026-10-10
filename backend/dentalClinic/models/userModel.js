@@ -127,13 +127,13 @@ userSchema.pre('save', function() {
   this.passwordChangedAt = Date.now() - 1000;
 });
 
-// when a patient/doctor "deletes" their account,
-// real apps usually don't actually delete the document from the database (losing appointment history, reviews, etc. tied to them). 
-// Instead, they flip active to false — a "soft delete."
+// includeInactive: admin-only queries. Never use in auth (login/protect/forgotPassword).
 userSchema.pre(/^find/, function() {
+  if (this.getOptions().includeInactive) return;
+
   this.find({
     active: mongoose.trusted({ $ne: false })
-  });
+  })
 })
 
 // Instance Methods

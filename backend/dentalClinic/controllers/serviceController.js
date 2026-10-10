@@ -25,8 +25,7 @@ exports.getAllServices = catchAsync(async (req, res, next) => {
 // Get Service
 exports.getService = catchAsync(async (req, res, next) => {
   const service = await Service.findOne({
-    slug: req.params.slug,
-    secretService: mongoose.trusted({ $ne: true })
+    slug: req.params.slug
   });
   
   if (!service) {

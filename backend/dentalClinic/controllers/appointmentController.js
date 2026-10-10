@@ -91,7 +91,7 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
     date: req.body.date,
     timeSlot: req.body.timeSlot,
     duration: service.duration,
-    price: service.price
+    price: service.priceDiscount ?? service.price
   });
 
   res.status(201).json({

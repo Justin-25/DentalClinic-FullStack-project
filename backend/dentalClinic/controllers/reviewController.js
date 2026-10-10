@@ -87,6 +87,20 @@ exports.getReview = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getMyReviews = catchAsync(async (req, res, next) => {
+  const reviews = await Review.find({ patient: req.user.id })
+    .populate('doctor', 'name')
+    .sort('-createdAt');
+
+  res.status(200).json({
+    status: 'success',
+    results: reviews.length,
+    data: {
+      reviews
+    }
+  });
+});
+
 exports.updateReview = catchAsync(async (req, res, next) => {
   const review = await Review.findById(req.params.id);
 

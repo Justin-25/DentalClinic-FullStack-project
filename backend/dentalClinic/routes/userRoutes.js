@@ -9,7 +9,7 @@ const router = express.Router();
 // PUBLIC ROUTES
 
 // Authentication
-router.post('/signup', authController.signup);
+router.post('/signup', limiter.signUpLimiter, authController.signup);
 
 router.post('/login', limiter.loginLimiter, authController.login);
 router.post('/forgotPassword', limiter.forgotPasswordLimiter, authController.forgotPassword);

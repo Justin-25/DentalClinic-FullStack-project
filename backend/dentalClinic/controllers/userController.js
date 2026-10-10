@@ -58,19 +58,22 @@ exports.deleteMyAccount = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
+  const users = await User.find().setOptions({ includeInactive: true });
 
   res.status(200).json({
     status: 'success',
     results: users.length,
     data: {
-      users
+      users: users.map((u) => ({
+        ...u.toJSON(),
+        active: u.active
+      }))
     }
   });
 });
 
 exports.getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.userId);
+  const user = await User.findById(req.params.userId).setOptions({ includeInactive: true });
 
   if(!user) {
     return next(new AppError('The server cannot find this user...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
@@ -79,7 +82,10 @@ exports.getUser = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      user
+      user: {
+        ...user.toJSON(),
+        active: user.active
+      }
     }
   });
 });
@@ -92,7 +98,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(req.params.userId, filteredBody, {
     returnDocument: 'after',
     runValidators: true
-  });
+  }).setOptions({ includeInactive: true });
 
   if (!user) {
     return next(new AppError('specific data or endpoint you asked for does not exist.', 404, ErrorCodes.RESOURCE_NOT_FOUND));
@@ -101,15 +107,22 @@ exports.updateUser = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      user
+      user: {
+        ...user.toJSON(),
+        active: user.active
+      }
     }
   });
 });
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.params.userId, {
+  const user = await User.findByIdAndUpdate(req.params.userId, {
     active: false
-  });
+  }).setOptions({ includeInactive: true });
+
+  if (!user) {
+    return next(new AppError('No user found with that ID...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
+  }
 
   res.status(204).send();
 });
