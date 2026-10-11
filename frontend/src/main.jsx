@@ -5,7 +5,16 @@ import { RouterProvider } from "react-router";
 import { router } from "./router";
 import "./index.css";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        if (error.status >= 400 && error.status < 500) return false;
+        return failureCount < 2;
+      },
+    },
+  },
+});
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
