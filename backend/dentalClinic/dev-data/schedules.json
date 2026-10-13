@@ -1,0 +1,259 @@
+[
+  {
+    "_id": "b10000000000000000000001",
+    "doctor": "a10000000000000000000011",
+    "weeklyAvailability": [
+      {
+        "day": "Monday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Monday",
+        "startTime": "13:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Tuesday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Tuesday",
+        "startTime": "13:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Wednesday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Wednesday",
+        "startTime": "13:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "13:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Friday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Friday",
+        "startTime": "13:00",
+        "endTime": "17:00"
+      }
+    ],
+    "exceptions": [
+      {
+        "date": "2026-10-23T00:00:00.000Z",
+        "reason": "Orthodontics conference"
+      }
+    ]
+  },
+  {
+    "_id": "b10000000000000000000002",
+    "doctor": "a10000000000000000000012",
+    "weeklyAvailability": [
+      {
+        "day": "Monday",
+        "startTime": "10:00",
+        "endTime": "18:00"
+      },
+      {
+        "day": "Wednesday",
+        "startTime": "10:00",
+        "endTime": "18:00"
+      },
+      {
+        "day": "Friday",
+        "startTime": "10:00",
+        "endTime": "18:00"
+      },
+      {
+        "day": "Saturday",
+        "startTime": "09:00",
+        "endTime": "13:00"
+      }
+    ],
+    "exceptions": []
+  },
+  {
+    "_id": "b10000000000000000000003",
+    "doctor": "a10000000000000000000013",
+    "weeklyAvailability": [
+      {
+        "day": "Monday",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Monday",
+        "startTime": "13:00",
+        "endTime": "16:00"
+      },
+      {
+        "day": "Tuesday",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Tuesday",
+        "startTime": "13:00",
+        "endTime": "16:00"
+      },
+      {
+        "day": "Wednesday",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Wednesday",
+        "startTime": "13:00",
+        "endTime": "16:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "13:00",
+        "endTime": "16:00"
+      }
+    ],
+    "exceptions": []
+  },
+  {
+    "_id": "b10000000000000000000004",
+    "doctor": "a10000000000000000000014",
+    "weeklyAvailability": [
+      {
+        "day": "Monday",
+        "startTime": "09:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Tuesday",
+        "startTime": "09:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Wednesday",
+        "startTime": "09:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "09:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Friday",
+        "startTime": "09:00",
+        "endTime": "17:00"
+      }
+    ],
+    "exceptions": [
+      {
+        "date": "2026-11-02T00:00:00.000Z",
+        "reason": "Personal day"
+      }
+    ]
+  },
+  {
+    "_id": "b10000000000000000000005",
+    "doctor": "a10000000000000000000015",
+    "weeklyAvailability": [
+      {
+        "day": "Tuesday",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Tuesday",
+        "startTime": "13:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "08:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "13:00",
+        "endTime": "17:00"
+      },
+      {
+        "day": "Wednesday",
+        "startTime": "13:00",
+        "endTime": "18:00"
+      }
+    ],
+    "exceptions": [
+      {
+        "date": "2026-10-29T00:00:00.000Z",
+        "reason": "Training course"
+      }
+    ]
+  },
+  {
+    "_id": "b10000000000000000000006",
+    "doctor": "a10000000000000000000016",
+    "weeklyAvailability": [
+      {
+        "day": "Monday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Monday",
+        "startTime": "13:00",
+        "endTime": "16:00"
+      },
+      {
+        "day": "Tuesday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Tuesday",
+        "startTime": "13:00",
+        "endTime": "16:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Thursday",
+        "startTime": "13:00",
+        "endTime": "16:00"
+      },
+      {
+        "day": "Friday",
+        "startTime": "09:00",
+        "endTime": "12:00"
+      },
+      {
+        "day": "Friday",
+        "startTime": "13:00",
+        "endTime": "16:00"
+      }
+    ],
+    "exceptions": []
+  }
+]

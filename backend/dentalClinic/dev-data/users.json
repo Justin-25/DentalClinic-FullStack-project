@@ -1,0 +1,184 @@
+[
+  {
+    "_id": "a10000000000000000000001",
+    "name": "Admin User",
+    "email": "admin@toothfairy.example",
+    "role": "admin",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!"
+  },
+  {
+    "_id": "a10000000000000000000011",
+    "name": "Dr. Mei Chen",
+    "email": "mei.chen@toothfairy.example",
+    "role": "doctor",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "doctor-1.jpg",
+    "specialization": "Orthodontics",
+    "yearsOfExperience": 12,
+    "bio": "Dr. Chen straightens smiles with braces and clear aligners, and is known for her calm, unhurried chair-side manner. She explains every step before it happens, so nothing is a surprise."
+  },
+  {
+    "_id": "a10000000000000000000012",
+    "name": "Dr. Ana Santos",
+    "email": "ana.santos@toothfairy.example",
+    "role": "doctor",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "doctor-2.jpg",
+    "specialization": "Cosmetic Dentistry",
+    "yearsOfExperience": 9,
+    "bio": "Dr. Santos focuses on natural-looking cosmetic work: whitening, veneers, and crowns. She designs each treatment around how you want your smile to feel, not just look."
+  },
+  {
+    "_id": "a10000000000000000000013",
+    "name": "Dr. Liam Brooks",
+    "email": "liam.brooks@toothfairy.example",
+    "role": "doctor",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "doctor-3.jpg",
+    "specialization": "Pediatric Dentistry",
+    "yearsOfExperience": 7,
+    "bio": "Dr. Brooks makes dental visits easy for kids and nervous adults alike, with short, gentle appointments and plenty of encouragement along the way."
+  },
+  {
+    "_id": "a10000000000000000000014",
+    "name": "Dr. Raj Patel",
+    "email": "raj.patel@toothfairy.example",
+    "role": "doctor",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "doctor-4.jpg",
+    "specialization": "General Dentistry",
+    "yearsOfExperience": 8,
+    "bio": "Dr. Patel covers everyday care, from check-ups and cleanings to fillings, and believes small, regular visits prevent big problems later."
+  },
+  {
+    "_id": "a10000000000000000000015",
+    "name": "Dr. Grace Okafor",
+    "email": "grace.okafor@toothfairy.example",
+    "role": "doctor",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "doctor-5.jpg",
+    "specialization": "Oral Surgery",
+    "yearsOfExperience": 15,
+    "bio": "Dr. Okafor performs extractions, wisdom tooth removal, and implants. Patients describe her as steady and reassuring, especially for procedures they were worried about."
+  },
+  {
+    "_id": "a10000000000000000000016",
+    "name": "Dr. Kenji Watanabe",
+    "email": "kenji.watanabe@toothfairy.example",
+    "role": "doctor",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "doctor-6.jpg",
+    "specialization": "Endodontics",
+    "yearsOfExperience": 20,
+    "bio": "Dr. Watanabe specialises in root canal treatment and saving natural teeth. Two decades of experience mean most of his patients are surprised by how comfortable it is."
+  },
+  {
+    "_id": "a10000000000000000000101",
+    "name": "Elena Reyes",
+    "email": "elena.reyes@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "patient-1.jpg"
+  },
+  {
+    "_id": "a10000000000000000000102",
+    "name": "Carlos Mendoza",
+    "email": "carlos.mendoza@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "patient-2.jpg"
+  },
+  {
+    "_id": "a10000000000000000000103",
+    "name": "Priya Nair",
+    "email": "priya.nair@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "patient-3.jpg"
+  },
+  {
+    "_id": "a10000000000000000000104",
+    "name": "Sam Kim",
+    "email": "sam.kim@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "patient-4.jpg"
+  },
+  {
+    "_id": "a10000000000000000000105",
+    "name": "Aisha Bello",
+    "email": "aisha.bello@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "patient-5.jpg"
+  },
+  {
+    "_id": "a10000000000000000000106",
+    "name": "Tom Becker",
+    "email": "tom.becker@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!",
+    "photo": "patient-6.jpg"
+  },
+  {
+    "_id": "a10000000000000000000107",
+    "name": "Marco Diaz",
+    "email": "marco.diaz@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!"
+  },
+  {
+    "_id": "a10000000000000000000108",
+    "name": "Jo Lee",
+    "email": "jo.lee@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!"
+  },
+  {
+    "_id": "a10000000000000000000109",
+    "name": "Hana Sato",
+    "email": "hana.sato@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!"
+  },
+  {
+    "_id": "a10000000000000000000110",
+    "name": "Noah Garcia",
+    "email": "noah.garcia@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!"
+  },
+  {
+    "_id": "a10000000000000000000111",
+    "name": "Mia Laurent",
+    "email": "mia.laurent@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!"
+  },
+  {
+    "_id": "a10000000000000000000112",
+    "name": "Ben Carter",
+    "email": "ben.carter@example.com",
+    "role": "patient",
+    "password": "Demo1234!",
+    "passwordConfirm": "Demo1234!"
+  }
+]

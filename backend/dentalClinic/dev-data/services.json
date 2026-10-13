@@ -1,0 +1,156 @@
+[
+  {
+    "_id": "6ab3e820f599c74d1127afc7",
+    "name": "Routine Dental Cleaning",
+    "category": "Preventive & Diagnostic",
+    "price": 60,
+    "duration": 45,
+    "summary": "A thorough cleaning that removes plaque and tartar to keep your teeth and gums healthy.",
+    "imageCover": "routine-dental-cleaning.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e838f599c74d1127afc8",
+    "name": "Digital X-Ray",
+    "category": "Preventive & Diagnostic",
+    "price": 45,
+    "duration": 20,
+    "summary": "Low-radiation digital images that help us spot problems below the surface early.",
+    "imageCover": "digital-x-ray.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e841f599c74d1127afc9",
+    "name": "Fluoride Treatment",
+    "category": "Preventive & Diagnostic",
+    "price": 30,
+    "duration": 20,
+    "summary": "A protective fluoride application that strengthens enamel and helps prevent cavities.",
+    "imageCover": "fluoride-treatment.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e84bf599c74d1127afca",
+    "name": "Tooth Filling",
+    "category": "Restorative",
+    "price": 80,
+    "priceDiscount": 70,
+    "duration": 45,
+    "summary": "Repair a cavity with a tooth-colored filling that restores shape and function.",
+    "imageCover": "tooth-filling.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e853f599c74d1127afcb",
+    "name": "Root Canal Therapy",
+    "category": "Restorative",
+    "price": 350,
+    "priceDiscount": 320,
+    "duration": 90,
+    "summary": "Remove infected tissue inside the tooth to relieve pain and save the natural tooth.",
+    "imageCover": "root-canal-therapy.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e85bf599c74d1127afcc",
+    "name": "Dental Crown",
+    "category": "Restorative",
+    "price": 400,
+    "duration": 90,
+    "summary": "A custom cap that covers and protects a damaged or weakened tooth.",
+    "imageCover": "dental-crown.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e864f599c74d1127afcd",
+    "name": "Tooth Extraction",
+    "category": "Surgical & Specialized",
+    "price": 100,
+    "duration": 40,
+    "summary": "Safe removal of a damaged, decayed, or problem tooth under local anesthesia.",
+    "imageCover": "tooth-extraction.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e873f599c74d1127afce",
+    "name": "Wisdom Tooth Removal",
+    "category": "Surgical & Specialized",
+    "price": 250,
+    "duration": 60,
+    "summary": "Removal of impacted or painful wisdom teeth with careful post-care guidance.",
+    "imageCover": "wisdom-tooth-removal.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e87bf599c74d1127afcf",
+    "name": "Dental Implant",
+    "category": "Surgical & Specialized",
+    "price": 1200,
+    "priceDiscount": 1100,
+    "duration": 120,
+    "summary": "A permanent titanium root and crown that replaces a missing tooth.",
+    "imageCover": "dental-implant.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e883f599c74d1127afd0",
+    "name": "Teeth Whitening",
+    "category": "Cosmetic",
+    "price": 200,
+    "priceDiscount": 160,
+    "duration": 60,
+    "summary": "Professional whitening that brightens your smile several shades in a single visit.",
+    "imageCover": "teeth-whitening.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e88cf599c74d1127afd1",
+    "name": "Porcelain Veneers",
+    "category": "Cosmetic",
+    "price": 900,
+    "duration": 90,
+    "summary": "Thin porcelain shells that reshape and brighten the front of your teeth.",
+    "imageCover": "porcelain-veneers.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e894f599c74d1127afd2",
+    "name": "Emergency Toothache Visit",
+    "category": "Emergency & Urgent Care",
+    "price": 90,
+    "duration": 30,
+    "summary": "Same-day evaluation and pain relief for severe toothache or swelling.",
+    "imageCover": "emergency-toothache-visit.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e89bf599c74d1127afd3",
+    "name": "Broken Tooth Repair",
+    "category": "Emergency & Urgent Care",
+    "price": 180,
+    "duration": 45,
+    "summary": "Urgent repair for a chipped, cracked, or knocked-out tooth.",
+    "imageCover": "broken-tooth-repair.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e8a9f599c74d1127afd4",
+    "name": "New Patient Consultation",
+    "category": "Consultation",
+    "price": 35,
+    "duration": 30,
+    "summary": "A first visit with an exam and a personalized treatment plan.",
+    "imageCover": "new-patient-consultation.jpg",
+    "secretService": false
+  },
+  {
+    "_id": "6ab3e8b9f599c74d1127afd5",
+    "name": "VIP Smile Makeover Package",
+    "category": "Cosmetic",
+    "price": 3000,
+    "duration": 180,
+    "summary": "An invitation-only full smile redesign combining whitening, veneers, and contouring.",
+    "imageCover": "default.jpg",
+    "secretService": true
+  }
+]
