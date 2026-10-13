@@ -51,7 +51,8 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
       .populate('patient', 'name')
       .populate('doctor', 'name')
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .sort('-createdAt'),
     Review.countDocuments(filter)
   ]);
 
