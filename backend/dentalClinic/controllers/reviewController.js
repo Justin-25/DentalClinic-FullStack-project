@@ -70,6 +70,21 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getClinicSummary = catchAsync(async (req, res, next) => {
+  const [summary] = await Review.aggregate([
+    { $match: { type: 'clinic' } },
+    { $group: { _id: null, ratingAverage: { $avg: '$rating' }, ratingCount: { $sum: 1} } },
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      ratingAverage: summary ? Math.round(summary.ratingAverage * 10) / 10 : null,
+      ratingCount: summary ? summary.ratingCount : 0
+    }
+  });
+});
+
 exports.getReview = catchAsync(async (req, res, next) => {
   const review = await Review.findById(req.params.id)
     .populate('patient', 'name')

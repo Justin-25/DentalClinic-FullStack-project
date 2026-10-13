@@ -6,6 +6,7 @@ const router = express.Router();
 
 // Public Routes
 router.get('/', reviewController.getAllReviews);
+router.get('/clinic-summary', reviewController.getClinicSummary)
 router.get('/mine', authController.protect, authController.restrictTo('patient'), reviewController.getMyReviews);
 router.get('/:id', reviewController.getReview);
 
