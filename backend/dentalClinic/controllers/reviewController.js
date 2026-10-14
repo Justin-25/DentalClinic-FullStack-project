@@ -72,16 +72,23 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
 });
 
 exports.getClinicSummary = catchAsync(async (req, res, next) => {
-  const [summary] = await Review.aggregate([
+  const groups = await Review.aggregate([
     { $match: { type: 'clinic' } },
-    { $group: { _id: null, ratingAverage: { $avg: '$rating' }, ratingCount: { $sum: 1} } },
-  ]);
+    { $group: { _id: '$rating', count: { $sum: 1 } } },
+  ])
+
+  const breakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+  groups.forEach((g) => { breakdown[g._id] = g.count; });
+
+  const ratingCount = groups.reduce((sum, g) => sum + g.count, 0);
+  const total = groups.reduce((sum, g) => sum + g._id * g.count, 0);
 
   res.status(200).json({
     status: 'success',
     data: {
-      ratingAverage: summary ? Math.round(summary.ratingAverage * 10) / 10 : null,
-      ratingCount: summary ? summary.ratingCount : 0
+      ratingAverage: ratingCount ? Math.round((total / ratingCount) * 10) / 10 : null,
+      ratingCount,
+      breakdown,
     }
   });
 });

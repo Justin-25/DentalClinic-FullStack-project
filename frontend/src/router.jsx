@@ -5,6 +5,7 @@ import Services from "./pages/public/Services";
 import ServiceDetail from "./pages/public/ServiceDetail";
 import Doctors from "./pages/public/Doctors";
 import DoctorProfile from "./pages/public/DoctorProfile";
+import Reviews from "./pages/public/Reviews";
 import NotFound from "./pages/public/NotFound";
 
 export const router = createBrowserRouter([
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
       { path: "services/:slug", element: <ServiceDetail /> },
       { path: "doctors", element: <Doctors /> },
       { path: "doctors/:doctorId", element: <DoctorProfile /> },
+      { path: "reviews", element: <Reviews /> },
       { path: "*", element: <NotFound /> },
     ],
   },
