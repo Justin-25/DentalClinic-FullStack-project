@@ -8,8 +8,8 @@ export function AuthProvider({ children }) {
   const queryClient = useQueryClient();
 
   const meQ = useQuery({
-    queryKey: ["user"],
-    queryFn: () => api("/users/login"),
+    queryKey: ["me"],
+    queryFn: () => api("/users/myAccount"),
     enabled: !!getToken(),
     staleTime: Infinity,
   });
@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
 
   async function login(email, password) {
     const res = await api("/users/login", {
-      method: "POST",
+      method: "GET",
       body: {
         email,
         password,
