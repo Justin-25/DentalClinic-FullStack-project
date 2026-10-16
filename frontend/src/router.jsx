@@ -7,6 +7,8 @@ import Doctors from "./pages/public/Doctors";
 import DoctorProfile from "./pages/public/DoctorProfile";
 import Reviews from "./pages/public/Reviews";
 import NotFound from "./pages/public/NotFound";
+import Login from "./pages/auth/Login";
+import AuthLayout from "./layouts/AuthLayout";
 
 export const router = createBrowserRouter([
   {
@@ -20,5 +22,9 @@ export const router = createBrowserRouter([
       { path: "reviews", element: <Reviews /> },
       { path: "*", element: <NotFound /> },
     ],
+  },
+  {
+    element: <AuthLayout />,
+    children: [{ path: "login", element: <Login /> }],
   },
 ]);

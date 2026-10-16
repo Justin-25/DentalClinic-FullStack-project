@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --color-brand: #17707A;      /* buttons, links, selected states */
   --color-brand-logo: #1F8A93; /* logo teal */
   --color-accent: #F2B84B;     /* gold sparkle, stars */
