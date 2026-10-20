@@ -1,7 +1,11 @@
 import { Link, NavLink } from "react-router";
+import { useAuth } from "../auth/AuthContext";
+import AccountMenu from "./AccountMenu";
 import Logo from "./Logo";
 
 export default function Header() {
+  const { user } = useAuth();
+
   const navClass = ({ isActive }) =>
     isActive
       ? "font-bold underline underline-offset-3 decoration-2 decoration-brand-logo"
@@ -18,15 +22,21 @@ export default function Header() {
           <NavLink to="/doctors" className={navClass}>
             Doctors
           </NavLink>
-          <NavLink to="/login" className={navClass}>
-            Login
+          <NavLink to="/reviews" className={navClass}>
+            Reviews
           </NavLink>
+          {!user && (
+            <NavLink to="/login" className={navClass}>
+              Log in
+            </NavLink>
+          )}
           <Link
             to="/book"
             className="rounded-full bg-brand px-4.5 py-2.5 font-semibold text-white transition duration-200 ease-soft hover:bg-brand-dark motion-safe:hover:-translate-y-0.5"
           >
             Book now
           </Link>
+          {user && <AccountMenu />}
         </nav>
       </div>
     </header>
