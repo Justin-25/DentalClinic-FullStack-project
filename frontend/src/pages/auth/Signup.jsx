@@ -4,15 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import { FaCircleExclamation } from "react-icons/fa6";
 import { useAuth } from "../../auth/AuthContext";
 import TextField from "../../components/TextField";
+import { validatePasswords } from "../../utils/validation";
 
 function validate(form) {
-  const errors = {};
+  const errors = { ...validatePasswords(form) };
   if (!form.name.trim()) errors.name = "Please enter your name.";
   if (!/^\S+@\S+\.\S+$/.test(form.email))
     errors.email = "Please enter a valid email.";
-  if (form.password.length < 8) errors.password = "Use at least 8 characters.";
-  if (form.passwordConfirm !== form.password)
-    errors.passwordConfirm = "Passwords don't match.";
   return errors;
 }
 

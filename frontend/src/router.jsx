@@ -10,6 +10,8 @@ import NotFound from "./pages/public/NotFound";
 import Login from "./pages/auth/Login";
 import AuthLayout from "./layouts/AuthLayout";
 import Signup from "./pages/auth/Signup";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +31,8 @@ export const router = createBrowserRouter([
     children: [
       { path: "login", element: <Login /> },
       { path: "signup", element: <Signup /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "reset-password/:token", element: <ResetPassword /> },
     ],
   },
 ]);

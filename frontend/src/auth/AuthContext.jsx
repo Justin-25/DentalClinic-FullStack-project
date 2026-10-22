@@ -48,6 +48,14 @@ export function AuthProvider({ children }) {
     return startSession(res);
   }
 
+  async function resetPassword(token, form) {
+    const res = await api(`/users/resetPassword/${token}`, {
+      method: "POST",
+      body: form,
+    });
+    return startSession(res);
+  }
+
   function logout() {
     clearToken();
     queryClient.setQueryData(["me"], null);
@@ -58,6 +66,7 @@ export function AuthProvider({ children }) {
     isLoading: meQ.isLoading,
     login,
     signup,
+    resetPassword,
     logout,
   };
 
