@@ -19,6 +19,16 @@ export function AuthProvider({ children }) {
     if (meQ.error?.status === 401) clearToken();
   }, [meQ.error]);
 
+  function startSession(res) {
+    setToken(res.token);
+    queryClient.setQueryData(["me"], {
+      data: {
+        user: res.data.user,
+      },
+    });
+    return res.data.user;
+  }
+
   async function login(email, password) {
     const res = await api("/users/login", {
       method: "POST",
@@ -27,13 +37,15 @@ export function AuthProvider({ children }) {
         password,
       },
     });
-    setToken(res.token);
-    queryClient.setQueryData(["me"], {
-      data: {
-        user: res.data.user,
-      },
+    return startSession(res);
+  }
+
+  async function signup(form) {
+    const res = await api("/users/signup", {
+      method: "POST",
+      body: form,
     });
-    return res.data.user;
+    return startSession(res);
   }
 
   function logout() {
@@ -45,6 +57,7 @@ export function AuthProvider({ children }) {
     user: meQ.data?.data.user ?? null,
     isLoading: meQ.isLoading,
     login,
+    signup,
     logout,
   };
 

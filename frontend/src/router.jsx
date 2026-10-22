@@ -9,6 +9,7 @@ import Reviews from "./pages/public/Reviews";
 import NotFound from "./pages/public/NotFound";
 import Login from "./pages/auth/Login";
 import AuthLayout from "./layouts/AuthLayout";
+import Signup from "./pages/auth/Signup";
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,9 @@ export const router = createBrowserRouter([
   },
   {
     element: <AuthLayout />,
-    children: [{ path: "login", element: <Login /> }],
+    children: [
+      { path: "login", element: <Login /> },
+      { path: "signup", element: <Signup /> },
+    ],
   },
 ]);
