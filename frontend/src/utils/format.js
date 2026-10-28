@@ -12,6 +12,13 @@ export const formatMonthYear = (iso) => new Date(iso).toLocaleDateString('en-US'
   year: 'numeric'
 });
 
+// local Monday (00:00) of the week containing 'd'
+export function startOfWeek(d) {
+  const monday = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
+  return monday;
+}
+
 // DAte -> "2026-10-29", using the LOCAL calendar day (not UTC)
 export function toYMD(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;

@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../api/client";
@@ -9,6 +11,7 @@ import {
   addMinutes,
   formatShortDate,
   formatTime,
+  startOfWeek,
   toYMD,
   weekdayOf,
 } from "../../utils/format";
@@ -48,11 +51,25 @@ export default function Book() {
     enabled: !!(doctorId && serviceId && date),
   });
 
-  const days = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
+  const MAX_WEEKS_AHEAD = 4;
+  const today = toYMD(new Date());
+  const thisMonday = startOfWeek(new Date());
+
+  const [weekOffset, setWeekOffset] = useState(() => {
+    if (!date) return 0;
+    const diffDays = Math.round(
+      (new Date(`${date}T00:00:00`) - thisMonday) / 86400000,
+    );
+    return Math.max(0, Math.floor(diffDays / 7));
+  });
+
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(thisMonday);
+    d.setDate(d.getDate() + weekOffset * 7 + i);
     return toYMD(d);
   });
+
+  const isPast = (ymd) => ymd < today;
 
   const services = servicesQ.data?.data.services ?? [];
   const doctors = doctorsQ.data?.data.doctors ?? [];
@@ -189,29 +206,64 @@ export default function Book() {
 
             {/* DAY CHIPS: scroll sideways */}
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {days.map((ymd) => {
-                const off = isOff(ymd);
-                const selected = ymd === date;
-                const [weekday, , dayNum] = formatShortDate(ymd)
-                  .replace(",", "")
-                  .split(" ");
+              {/* 1. week bar — ONCE, above the grid */}
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  aria-label="Previous week"
+                  disabled={weekOffset === 0}
+                  onClick={() => setWeekOffset((w) => w - 1)}
+                  className="rounded-full p-2 text-ink hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <FaChevronLeft aria-hidden="true" />
+                </button>
+                <p className="font-semibold text-ink">
+                  {formatShortDate(days[0]).split(", ")[1]} -{" "}
+                  {formatShortDate(days[days.length - 1]).split(", ")[1]}
+                </p>
+                <button
+                  type="button"
+                  aria-label="Next week"
+                  disabled={weekOffset === MAX_WEEKS_AHEAD}
+                  onClick={() => setWeekOffset((w) => w + 1)}
+                  className="rounded-full p-2 text-ink hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+                >
+                  <FaChevronRight aria-hidden="true" />
+                </button>
+              </div>
 
-                return (
-                  <button
-                    key={ymd}
-                    type="button"
-                    disabled={off}
-                    onClick={() => chooseDate(ymd)}
-                    aria-pressed={selected}
-                    className={`flex w-16 shrink-0 flex-col items-center rounded-xl py-2.5 transition-colors duration-150 ease-soft
-                      ${selected ? "bg-brand text-white" : off ? "cursor-not-allowed bg-gray-100 text-gray-400" : "border border-gray-300 bg-white text-ink hover:border-brand"}`}
-                  >
-                    <span className="text-[12px] font-medium">{weekday}</span>
-                    <span className="text-xl font-semibold">{dayNum}</span>
-                    {off && <span className="text-[10px]">Off</span>}
-                  </button>
-                );
-              })}
+              {/* 2. day chips — the grid, ONE chip per day */}
+              <div className="grid grid-cols-7 gap-1.5 md:flex md:gap-2.5">
+                {days.map((ymd) => {
+                  const past = isPast(ymd);
+                  const off = !past && isOff(ymd);
+                  const unavailable = past || off;
+                  const selected = ymd === date;
+                  const [weekday, , dayNum] = formatShortDate(ymd)
+                    .replace(",", "")
+                    .split(" ");
+
+                  return (
+                    <button
+                      key={ymd}
+                      type="button"
+                      disabled={unavailable}
+                      onClick={() => chooseDate(ymd)}
+                      aria-pressed={selected}
+                      className={`flex h-18 w-full flex-col items-center justify-center rounded-xl transition-colors md:w-15.5 md:shrink-0 duration-150 ease-soft
+                      ${selected ? "bg-brand text-white" : unavailable ? "cursor-not-allowed bg-gray-100 text-gray-400" : "border border-gray-300 bg-white text-ink hover:border-brand"}`}
+                    >
+                      <span className="text-[12px] font-medium">{weekday}</span>
+                      <span className="text-xl font-semibold">{dayNum}</span>
+                      {past ? (
+                        <span className="text-[10px]">Past</span>
+                      ) : off ? (
+                        <span className="text-[10px]">Off</span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {!date && (
@@ -245,7 +297,7 @@ export default function Book() {
                         key={t}
                         type="button"
                         onClick={() => choose("time", t)}
-                        className="w-24 rounded-lg border border-gray-300 bg-white py-2.5 text-[15px] font-medium text-ink transition-colors duration-150 ease-soft hover:border-brand hover:text-brand"
+                        className="h-11 w-19 rounded-lg border border-gray-300 bg-white text-[15px] font-medium text-ink transition-colors duration-150 ease-soft hover:border-brand hover:text-brand"
                       >
                         {formatTime(t)}
                       </button>
