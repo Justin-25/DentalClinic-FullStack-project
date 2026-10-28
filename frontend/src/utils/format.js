@@ -11,3 +11,22 @@ export const formatMonthYear = (iso) => new Date(iso).toLocaleDateString('en-US'
   month: 'short',
   year: 'numeric'
 });
+
+// DAte -> "2026-10-29", using the LOCAL calendar day (not UTC)
+export function toYMD(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+export const weekdayOf = (ymd) => {
+  return new Date(`${ymd}T00:00:00Z`).toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC'});
+}
+
+export const formatShortDate = (ymd) => {
+  return new Date(`${ymd}T00:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'});
+}
+
+export function addMinutes(hhmm, minutes) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const total = h * 60 + m + minutes;
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}

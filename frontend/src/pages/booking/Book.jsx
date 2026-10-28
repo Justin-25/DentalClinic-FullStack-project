@@ -5,6 +5,13 @@ import Stepper from "../../components/booking/Stepper";
 import BookingSummary from "../../components/booking/BookingSummary";
 import ServiceCard from "../../components/ServiceCard";
 import DoctorCard from "../../components/DoctorCard";
+import {
+  addMinutes,
+  formatShortDate,
+  formatTime,
+  toYMD,
+  weekdayOf,
+} from "../../utils/format";
 
 export default function Book() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,15 +27,44 @@ export default function Book() {
     queryKey: ["services"],
     queryFn: () => api("/services"),
   });
+
   const doctorsQ = useQuery({
     queryKey: ["doctors"],
     queryFn: () => api("/doctors"),
+  });
+
+  const scheduleQ = useQuery({
+    queryKey: ["schedule", doctorId],
+    queryFn: () => api(`/schedules/${doctorId}`),
+    enabled: !!doctorId,
+  });
+
+  const slotsQ = useQuery({
+    queryKey: ["availability", doctorId, date, serviceId],
+    queryFn: () =>
+      api(
+        `/schedules/${doctorId}/availability?date=${date}&service=${serviceId}`,
+      ),
+    enabled: !!(doctorId && serviceId && date),
+  });
+
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    return toYMD(d);
   });
 
   const services = servicesQ.data?.data.services ?? [];
   const doctors = doctorsQ.data?.data.doctors ?? [];
   const service = services.find((s) => s.id === serviceId);
   const doctor = doctors.find((d) => d.id === doctorId);
+  const schedule = scheduleQ.data?.data.schedule;
+  const isOff = (ymd) => {
+    return (
+      !schedule?.weeklyAvailability.some((b) => b.day === weekdayOf(ymd)) ||
+      schedule.exceptions.some((ex) => ex.date.slice(0, 10) === ymd)
+    );
+  };
 
   function choose(key, value) {
     setSearchParams((prev) => {
@@ -41,6 +77,14 @@ export default function Book() {
     setSearchParams((prev) => {
       prev.delete(key);
       prev.delete("date");
+      prev.delete("time");
+      return prev;
+    });
+  }
+
+  function chooseDate(ymd) {
+    setSearchParams((prev) => {
+      prev.set("date", ymd);
       prev.delete("time");
       return prev;
     });
@@ -133,7 +177,90 @@ export default function Book() {
         )}
 
         {step === 3 && (
-          <p className="text-gray-500">Date & time - next part (9b).</p>
+          <section className="space-y-5">
+            <h1 className="text-3xl font-bold text-ink">Pick a date & time</h1>
+
+            {scheduleQ.isError && (
+              <p className="text-gray-500">
+                This dentist hasn't published their hours yet. Please choose
+                another dentists.
+              </p>
+            )}
+
+            {/* DAY CHIPS: scroll sideways */}
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {days.map((ymd) => {
+                const off = isOff(ymd);
+                const selected = ymd === date;
+                const [weekday, , dayNum] = formatShortDate(ymd)
+                  .replace(",", "")
+                  .split(" ");
+
+                return (
+                  <button
+                    key={ymd}
+                    type="button"
+                    disabled={off}
+                    onClick={() => chooseDate(ymd)}
+                    aria-pressed={selected}
+                    className={`flex w-16 shrink-0 flex-col items-center rounded-xl py-2.5 transition-colors duration-150 ease-soft
+                      ${selected ? "bg-brand text-white" : off ? "cursor-not-allowed bg-gray-100 text-gray-400" : "border border-gray-300 bg-white text-ink hover:border-brand"}`}
+                  >
+                    <span className="text-[12px] font-medium">{weekday}</span>
+                    <span className="text-xl font-semibold">{dayNum}</span>
+                    {off && <span className="text-[10px]">Off</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            {!date && (
+              <p className="text-gray-500">Pick a day to see open times.</p>
+            )}
+            {date && slotsQ.isPending && (
+              <p className="text-gray-500">Finding open times...</p>
+            )}
+            {date && slotsQ.data?.data.slots.length === 0 && (
+              <p className="text-gray-500">
+                No openings on this day. Try another day.
+              </p>
+            )}
+
+            {/* SLOTS: Morning / Afternoon */}
+            {[
+              ["Morning", (t) => t < "12:00"],
+              ["Afternoon", (t) => t >= "12:00"],
+            ].map(([label, inGroup]) => {
+              const group = (slotsQ.data?.data.slots ?? []).filter(inGroup);
+              if (group.length === 0) return null;
+
+              return (
+                <div key={label} className="space-y-2">
+                  <h2 className="text-[13px] font-medium text-gray-500">
+                    {label}
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {group.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => choose("time", t)}
+                        className="w-24 rounded-lg border border-gray-300 bg-white py-2.5 text-[15px] font-medium text-ink transition-colors duration-150 ease-soft hover:border-brand hover:text-brand"
+                      >
+                        {formatTime(t)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            {date && (
+              <p className="text-[12px] text-gray-500">
+                Only open times are shown.
+              </p>
+            )}
+          </section>
         )}
         {step === 4 && (
           <p className="text-gray-500">Review & confirm - next part (9c).</p>
@@ -143,8 +270,12 @@ export default function Book() {
       <BookingSummary
         service={service}
         doctor={doctor}
-        date={date}
-        time={time}
+        date={date && formatShortDate(date)}
+        time={
+          time &&
+          service &&
+          `${formatTime(time)} - ${formatTime(addMinutes(time, service.duration))}`
+        }
       />
     </div>
   );
