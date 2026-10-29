@@ -200,28 +200,16 @@ export default function Book() {
       <div className="min-w-0 flex-1 space-y-6">
         <Stepper current={step} />
 
-        {/* chips for what's already chosen */}
-        {service && step > 1 && (
-          <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3 text-sm">
+        {/* mobile only: the summary panel shows this on desktop */}
+        {service && (step === 2 || step === 3) && (
+          <div className="flex items-center justify-between rounded-[10px] bg-gray-100 px-3 py-2.5 text-[13px] lg:hidden">
             <span className="font-medium text-ink">
-              {service.name} · {service.duration} min
+              {service.name} ·{" "}
+              {step === 2 ? `${service.duration} min` : doctor?.name}
             </span>
             <button
               type="button"
-              onClick={() => change("service")}
-              className="font-semibold text-brand"
-            >
-              Change
-            </button>
-          </div>
-        )}
-
-        {doctor && step > 2 && (
-          <div className="flex items-center justify-between rounded-xl bg-white px-4 py-3 text-sm">
-            <span className="font-medium text-ink">{doctor.name}</span>
-            <button
-              type="button"
-              onClick={() => change("doctor")}
+              onClick={() => change(step === 2 ? "service" : "doctor")}
               className="font-semibold text-brand"
             >
               Change
