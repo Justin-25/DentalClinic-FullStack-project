@@ -4,11 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "../../auth/AuthContext";
 import { FaCircleExclamation } from "react-icons/fa6";
 import TextField from "../../components/TextField";
-
-const MESSAGES = {
-  INVALID_CREDENTIALS: "Email or password is incorrect.",
-  RATE_LIMITED: "Too many attempts. Please wait a while and try again.",
-};
+import { LOGIN_MESSAGES } from "../../auth/loginMessages";
 
 export default function Login() {
   const { user, login } = useAuth();
@@ -35,7 +31,7 @@ export default function Login() {
   }
 
   const errorMessage =
-    loginM.error && (MESSAGES[loginM.error.code] ?? loginM.error.message);
+    loginM.error && (LOGIN_MESSAGES[loginM.error.code] ?? loginM.error.message);
 
   return (
     <div className="flex items-center justify-center px-5 py-14">

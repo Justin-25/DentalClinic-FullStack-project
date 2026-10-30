@@ -5,6 +5,9 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { api } from "../../api/client";
 import Stepper from "../../components/booking/Stepper";
 import BookingSummary from "../../components/booking/BookingSummary";
+import BookingLogin from "../../components/booking/BookingLogin";
+import MobileBar from "../../components/booking/MobileBar";
+import { primaryBtn, secondaryBtn } from "../../components/booking/buttonStyles";
 import ServiceCard from "../../components/ServiceCard";
 import DoctorCard from "../../components/DoctorCard";
 import {
@@ -36,6 +39,9 @@ export default function Book() {
 
   const step = !serviceId ? 1 : !doctorId ? 2 : !time ? 3 : 4;
 
+  // a picked-but-not-confirmed time: local state until Continue writes it to the URL
+  const [pendingTime, setPendingTime] = useState(null);
+
   // same keys as the Services and Doctors pages -> shared cache, instant when coming from there
   const servicesQ = useQuery({
     queryKey: ["services"],
@@ -62,6 +68,8 @@ export default function Book() {
     enabled: !!(doctorId && serviceId && date),
   });
 
+  // mutate() is called with the names to show on the success screen,
+  // because the URL (and so service/doctor) is cleared once the booking succeeds
   const bookM = useMutation({
     mutationFn: () =>
       api("/appointments", {
@@ -126,6 +134,7 @@ export default function Book() {
   }
 
   function change(key) {
+    setPendingTime(null);
     setSearchParams((prev) => {
       prev.delete(key);
       prev.delete("date");
@@ -135,6 +144,7 @@ export default function Book() {
   }
 
   function chooseDate(ymd) {
+    setPendingTime(null);
     setSearchParams((prev) => {
       prev.set("date", ymd);
       prev.delete("time");
@@ -142,8 +152,13 @@ export default function Book() {
     });
   }
 
+  function confirmTime() {
+    choose("time", pendingTime);
+  }
+
   function pickAnotherTime() {
     bookM.reset();
+    setPendingTime(null);
     queryClient.invalidateQueries({
       queryKey: ["availability"],
     });
@@ -153,42 +168,74 @@ export default function Book() {
     });
   }
 
+  function confirmBooking() {
+    bookM.mutate({ serviceName: service?.name, doctorName: doctor?.name });
+  }
+
   const price = service ? (service.priceDiscount ?? service.price) : null;
+  // the URL time once confirmed, otherwise the one being picked on step 3
+  const shownTime = time ?? pendingTime;
   const timeRange =
-    time && service
-      ? `${formatTime(time)} – ${formatTime(addMinutes(time, service.duration))}`
+    shownTime && service
+      ? `${formatTime(shownTime)} – ${formatTime(addMinutes(shownTime, service.duration))}`
       : null;
+
+  const isPatient = user?.role === "patient";
+  const canConfirm = step === 4 && isPatient;
+  const hasMobileBar = step === 3 || canConfirm;
 
   if (bookM.isSuccess) {
     const appt = bookM.data.data.appointment;
+    const { serviceName, doctorName } = bookM.variables;
+
     return (
-      <div className="mx-auto max-w-xl  space-y-5 px-5 py-16 text-center">
-        <span className="mx-auto flex size-20 items-center justify-center rounded-full bg-teal-50 text-3xl text-brand">
+      <div className="mx-auto max-w-140 space-y-5 px-5 pb-44 pt-8 text-center md:pb-16 md:pt-20">
+        <span className="mx-auto flex size-20 items-center justify-center rounded-full bg-gray-200 text-4xl text-ink md:size-22 md:text-[40px]">
           <FaCheck aria-hidden="true" />
         </span>
-        <h1 className="text-3xl font-bold text-ink">You're booked!</h1>
-        <p className="text-gray-500">
+        <h1 className="text-[26px] font-bold text-ink md:text-[32px]">
+          You're booked!
+        </h1>
+        <p className="text-sm text-gray-500 md:text-base">
           We'll confirm your appointment soon. Updates show up in My
           appointments.
         </p>
-        <span className="inline-block rounded-full bg-amber-50 px-3 py-1 text-[12px] font-semibold text-amber-800">
+        <span className="inline-block rounded-full bg-gray-100 px-3 py-1.5 text-[12px] font-semibold text-ink md:text-[13px]">
           Pending confirmation
         </span>
-        <p className="text-sm text-ink">
-          {formatShortDate(appt.date.slice(0, 10))} •{" "}
-          {formatTime(appt.timeSlot)}
-        </p>
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Link
-            to="/account/appointments"
-            className="rounded-full bg-brand px-6 py-3 font-semibold text-white hover:bg-brand-dark"
-          >
+
+        <dl className="rounded-xl border border-gray-300 bg-white px-4 py-1.5 text-left md:px-5 md:py-2">
+          {[
+            ["Service", serviceName],
+            ["Dentist", doctorName],
+            [
+              "When",
+              `${formatShortDate(appt.date.slice(0, 10))} · ${formatTime(appt.timeSlot)}`,
+            ],
+          ].map(([k, v]) => (
+            <div key={k} className="flex justify-between gap-4 py-2 text-sm">
+              <dt className="text-gray-500">{k}</dt>
+              <dd className="text-right font-medium text-ink">{v || "—"}</dd>
+            </div>
+          ))}
+        </dl>
+
+        {/* desktop: side by side under the card */}
+        <div className="hidden gap-3 md:flex">
+          <Link to="/account/appointments" className={primaryBtn}>
             View my appointments
           </Link>
-          <Link
-            to="/"
-            className="rounded-full border border-gray-300 px-6 py-3 font-semibold text-ink hover:border-brand"
-          >
+          <Link to="/" className={secondaryBtn}>
+            Back to home
+          </Link>
+        </div>
+
+        {/* mobile: stacked in the bottom bar */}
+        <div className="fixed inset-x-0 bottom-0 z-10 space-y-2.5 border-t border-gray-300 bg-white px-5 py-4 md:hidden">
+          <Link to="/account/appointments" className={primaryBtn}>
+            View my appointments
+          </Link>
+          <Link to="/" className={secondaryBtn}>
             Back to home
           </Link>
         </div>
@@ -196,8 +243,42 @@ export default function Book() {
     );
   }
 
+  // desktop panel: Price + Confirm on the confirm step, otherwise the choices so far
+  const summaryRows = canConfirm
+    ? [["Price", price != null && `$${price}`]]
+    : [
+        ["Service", service?.name],
+        ["Dentist", doctor?.name],
+        ["Date", date && formatShortDate(date)],
+        ["Time", timeRange],
+      ];
+
+  const continueButton = (
+    <button
+      type="button"
+      disabled={!(step === 3 && pendingTime)}
+      onClick={confirmTime}
+      className={primaryBtn}
+    >
+      Continue
+    </button>
+  );
+
+  const confirmButton = (
+    <button
+      type="button"
+      onClick={confirmBooking}
+      disabled={bookM.isPending}
+      className={primaryBtn}
+    >
+      {bookM.isPending ? "Booking..." : "Confirm booking"}
+    </button>
+  );
+
   return (
-    <div className="mx-auto flex max-w-6xl gap-10 px-5 py-10">
+    <div
+      className={`mx-auto flex max-w-6xl gap-10 px-5 pt-10 lg:pb-10 ${hasMobileBar ? "pb-28" : "pb-10"}`}
+    >
       <div className="min-w-0 flex-1 space-y-6">
         <Stepper current={step} />
 
@@ -220,7 +301,14 @@ export default function Book() {
 
         {step === 1 && (
           <section className="space-y-4">
-            <h1 className="text-3xl font-bold text-ink">What do you need?</h1>
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold text-ink md:text-[32px]">
+                What do you need?
+              </h1>
+              <p className="text-sm text-gray-500 md:text-base">
+                Choose a treatment to see dentists and open times.
+              </p>
+            </div>
             <div className="grid gap-4 md:grid-cols-2">
               {servicesQ.isPending && (
                 <p className="text-sm text-gray-500">Loading services...</p>
@@ -246,7 +334,9 @@ export default function Book() {
 
         {step === 2 && (
           <section className="space-y-4">
-            <h1 className="text-3xl font-bold text-ink">Choose your dentist</h1>
+            <h1 className="text-2xl font-bold text-ink md:text-[32px]">
+              Choose your dentist
+            </h1>
             <div className="grid gap-4 md:grid-cols-2">
               {doctorsQ.isPending && (
                 <p className="text-sm text-gray-500">Loading dentists...</p>
@@ -272,7 +362,9 @@ export default function Book() {
 
         {step === 3 && (
           <section className="space-y-5">
-            <h1 className="text-3xl font-bold text-ink">Pick a date & time</h1>
+            <h1 className="text-2xl font-bold text-ink md:text-[32px]">
+              Pick a date & time
+            </h1>
 
             {scheduleQ.isError && (
               <p className="text-gray-500">
@@ -294,7 +386,7 @@ export default function Book() {
                 >
                   <FaChevronLeft aria-hidden="true" />
                 </button>
-                <p className="font-semibold text-ink">
+                <p className="text-[15px] font-semibold text-ink md:text-base">
                   {formatShortDate(days[0]).split(", ")[1]} –{" "}
                   {formatShortDate(days[days.length - 1]).split(", ")[1]}
                 </p>
@@ -360,7 +452,7 @@ export default function Book() {
               </p>
             )}
 
-            {/* SLOTS: Morning / Afternoon */}
+            {/* SLOTS: Morning / Afternoon — the group says AM/PM, so the chips don't */}
             {[
               ["Morning", (t) => t < "12:00"],
               ["Afternoon", (t) => t >= "12:00"],
@@ -370,82 +462,97 @@ export default function Book() {
 
               return (
                 <div key={label} className="space-y-2">
-                  <h3 className="text-[13px] font-medium text-gray-500">
+                  <h3 className="text-[13px] font-medium text-gray-500 md:text-sm">
                     {label}
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {group.map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => choose("time", t)}
-                        className="h-11 w-19 rounded-lg border border-gray-300 bg-white text-[15px] font-medium text-ink transition-colors duration-150 ease-soft hover:border-brand hover:text-brand"
-                      >
-                        {formatTime(t)}
-                      </button>
-                    ))}
+                    {group.map((t) => {
+                      const selected = t === pendingTime;
+                      return (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setPendingTime(t)}
+                          aria-pressed={selected}
+                          aria-label={formatTime(t)}
+                          className={`h-11 w-19 rounded-lg text-[15px] font-medium transition-colors duration-150 ease-soft ${
+                            selected
+                              ? "bg-brand text-white"
+                              : "border border-gray-300 bg-white text-ink hover:border-brand hover:text-brand"
+                          }`}
+                        >
+                          {formatTime(t).split(" ")[0]}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               );
             })}
 
             {date && (
-              <p className="text-[12px] text-gray-500">
+              <p className="text-[12px] text-gray-500 md:text-[13px]">
                 Only open times are shown.
               </p>
             )}
+
+            <MobileBar>{continueButton}</MobileBar>
           </section>
         )}
-        {step === 4 && (
-          <section className="space-y-5">
-            <h1 className="text-3xl font-bold text-ink">Review & confirm</h1>
 
-            {/* the choices, as a list */}
-            <dl className="divide-y divide-gray-100 rounded-xl border border-gray-300 bg-white px-5">
+        {step === 4 && !user && (
+          <BookingLogin
+            summary={`${service?.name ?? ""} · ${doctor?.name ?? ""}`}
+            when={date && timeRange && `${formatShortDate(date)} · ${timeRange}`}
+            signupHref={`/signup?redirect=${encodeURIComponent(here)}`}
+          />
+        )}
+
+        {step === 4 && user && (
+          <section className="space-y-5">
+            <h1 className="text-2xl font-bold text-ink md:text-[32px]">
+              Review & confirm
+            </h1>
+
+            {/* the choices, as a list (Price lives in the panel on desktop) */}
+            <dl className="rounded-xl border border-gray-300 bg-white px-4 py-1.5 md:px-5 md:py-2">
               {[
                 ["Service", service?.name],
                 ["Dentist", doctor?.name],
-                ["Date", date && formatShortDate(date)],
+                [
+                  "Date",
+                  date && (
+                    <>
+                      <span className="hidden md:inline">
+                        {formatLongDate(date)}, {date.slice(0, 4)}
+                      </span>
+                      <span className="md:hidden">
+                        {formatShortDate(date)}, {date.slice(0, 4)}
+                      </span>
+                    </>
+                  ),
+                ],
                 ["Time", timeRange],
-                ["Price", price != null && `$${price}`],
-              ].map(([k, v]) => (
-                <div key={k} className="flex justify-between py-3 text-sm">
+                ["Duration", service && `${service.duration} min`],
+                ["Price", price != null && `$${price}`, "lg:hidden"],
+              ].map(([k, v, only = ""]) => (
+                <div
+                  key={k}
+                  className={`flex justify-between gap-4 py-2 text-sm ${only}`}
+                >
                   <dt className="text-gray-500">{k}</dt>
-                  <dd className="font-medium text-ink">{v || "-"}</dd>
+                  <dd className="text-right font-medium text-ink">{v || "—"}</dd>
                 </div>
               ))}
             </dl>
 
-            {!user ? (
-              <div className="space-y-3 rounded-xl bg-white p-5">
-                <p className="font-semibold text-ink">
-                  Log in to finish booking
-                </p>
-                <p className="text-sm text-gray-500">
-                  Your choices are saved. You'll come right back here.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    to={`/login?redirect=${encodeURIComponent(here)}`}
-                    className="rounded-full bg-brand px-6 py-3 font-semibold text-white hover:bg-brand-dark"
-                  >
-                    Log in
-                  </Link>
-                  <Link
-                    to={`/signup?redirect=${encodeURIComponent(here)}`}
-                    className="rounded-full border border-gray-300 px-6 py-3 font-semibold text-ink hover:border-brand"
-                  >
-                    Create an account
-                  </Link>
-                </div>
-              </div>
-            ) : user.role !== "patient" ? (
-              <p className="rounded-xl bg-white p-5 text-sm text-gray-500">
+            {!isPatient ? (
+              <p className="rounded-xl bg-gray-100 p-5 text-sm text-gray-500">
                 Bookings are made from a patient account.
               </p>
             ) : (
               <>
-                <p className="text-sm text-gray-500">
+                <p className="text-[13px] text-gray-500 md:text-sm">
                   Your appointment stays pending until the clinic confirms it.
                   You can cancel anytime from My appointments.
                 </p>
@@ -453,7 +560,7 @@ export default function Book() {
                 {bookM.error && (
                   <div
                     role="alert"
-                    className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-[13px] font-medium text-red-800"
+                    className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-[13px] font-medium text-red-800 md:text-sm"
                   >
                     <FaCircleExclamation
                       aria-hidden="true"
@@ -461,14 +568,15 @@ export default function Book() {
                     />
                     {slotTaken ? (
                       <span>
-                        Someone just booked this time.{" "}
+                        Someone just booked this time. Please{" "}
                         <button
                           type="button"
                           onClick={pickAnotherTime}
                           className="font-semibold underline"
                         >
-                          Pick another time
+                          pick another one
                         </button>
+                        .
                       </span>
                     ) : (
                       bookM.error.message
@@ -476,14 +584,7 @@ export default function Book() {
                   </div>
                 )}
 
-                <button
-                  type="button"
-                  onClick={() => bookM.mutate()}
-                  disabled={bookM.isPending}
-                  className="w-full rounded-full bg-brand py-3.5 text-[15px] font-semibold text-white transition duration-200 ease-soft hover:bg-brand-dark disabled:opacity-60"
-                >
-                  {bookM.isPending ? "Booking..." : "Confirm booking"}
-                </button>
+                <MobileBar>{confirmButton}</MobileBar>
               </>
             )}
           </section>
@@ -491,11 +592,11 @@ export default function Book() {
       </div>
 
       <BookingSummary
-        service={service}
-        doctor={doctor}
-        date={date && formatShortDate(date)}
-        time={timeRange}
-      />
+        rows={summaryRows}
+        hint={step === 1 ? "Pick a service to start." : null}
+      >
+        {step < 4 ? continueButton : canConfirm ? confirmButton : null}
+      </BookingSummary>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { FaCheck } from "react-icons/fa6";
 
-const STEPS = ["Service", "Dentist", "Time", "Confirm"];
+const STEPS = ["Service", "Doctor", "Time", "Confirm"];
 
 export default function Stepper({ current }) {
   return (
