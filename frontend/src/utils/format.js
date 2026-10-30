@@ -32,6 +32,12 @@ export const formatShortDate = (ymd) => {
   return new Date(`${ymd}T00:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'});
 }
 
+export const formatLongDate = (ymd) => {
+  return new Date(`${ymd}T00:00:00Z`).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC'
+  })
+}
+
 export function addMinutes(hhmm, minutes) {
   const [h, m] = hhmm.split(':').map(Number);
   const total = h * 60 + m + minutes;

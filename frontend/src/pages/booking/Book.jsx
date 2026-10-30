@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa6";
 import {
   addMinutes,
+  formatLongDate,
   formatShortDate,
   formatTime,
   startOfWeek,
@@ -342,6 +343,11 @@ export default function Book() {
               </div>
             </div>
 
+            {date && (
+              <h2 className="text-[15px] font-semibold text-ink md:text-[18px]">
+                {formatLongDate(date)}
+              </h2>
+            )}
             {!date && (
               <p className="text-gray-500">Pick a day to see open times.</p>
             )}
@@ -364,9 +370,9 @@ export default function Book() {
 
               return (
                 <div key={label} className="space-y-2">
-                  <h2 className="text-[13px] font-medium text-gray-500">
+                  <h3 className="text-[13px] font-medium text-gray-500">
                     {label}
-                  </h2>
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {group.map((t) => (
                       <button
