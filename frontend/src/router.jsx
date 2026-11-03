@@ -16,6 +16,7 @@ import RequireAuth from "./pages/auth/RequireAuth";
 import Placeholder from "./pages/Placeholder";
 import BookingLayout from "./layouts/BookingLayout";
 import Book from "./pages/booking/Book";
+import PortalLayout from "./layouts/PortalLayout";
 
 export const router = createBrowserRouter([
   {
@@ -27,19 +28,6 @@ export const router = createBrowserRouter([
       { path: "doctors", element: <Doctors /> },
       { path: "doctors/:doctorId", element: <DoctorProfile /> },
       { path: "reviews", element: <Reviews /> },
-      {
-        element: <RequireAuth roles={["patient"]} />,
-        children: [
-          {
-            path: "account/appointments",
-            element: <Placeholder title="My appointments" />,
-          },
-          {
-            path: "account/settings",
-            element: <Placeholder title="Account settings" />,
-          },
-        ],
-      },
       {
         element: <RequireAuth roles={["doctor"]} />,
         children: [
@@ -73,5 +61,23 @@ export const router = createBrowserRouter([
   {
     element: <BookingLayout />,
     children: [{ path: "book", element: <Book /> }],
+  },
+  {
+    element: <RequireAuth roles={["patient"]} />,
+    children: [
+      {
+        element: <PortalLayout />,
+        children: [
+          {
+            path: "account/appointments",
+            element: <Placeholder title="My appointments" />,
+          },
+          {
+            path: "account/settings",
+            element: <Placeholder title="Account settings" />,
+          },
+        ],
+      },
+    ],
   },
 ]);
