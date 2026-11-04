@@ -7,7 +7,10 @@ import Stepper from "../../components/booking/Stepper";
 import BookingSummary from "../../components/booking/BookingSummary";
 import BookingLogin from "../../components/booking/BookingLogin";
 import MobileBar from "../../components/booking/MobileBar";
-import { primaryBtn, secondaryBtn } from "../../components/booking/buttonStyles";
+import {
+  primaryBtn,
+  secondaryBtn,
+} from "../../components/booking/buttonStyles";
 import ServiceCard from "../../components/ServiceCard";
 import DoctorCard from "../../components/DoctorCard";
 import {
@@ -17,10 +20,10 @@ import {
   FaCheck,
 } from "react-icons/fa6";
 import {
-  addMinutes,
   formatLongDate,
   formatShortDate,
   formatTime,
+  formatTimeRange,
   startOfWeek,
   toYMD,
   weekdayOf,
@@ -176,9 +179,7 @@ export default function Book() {
   // the URL time once confirmed, otherwise the one being picked on step 3
   const shownTime = time ?? pendingTime;
   const timeRange =
-    shownTime && service
-      ? `${formatTime(shownTime)} – ${formatTime(addMinutes(shownTime, service.duration))}`
-      : null;
+    shownTime && service ? formatTimeRange(shownTime, service.duration) : null;
 
   const isPatient = user?.role === "patient";
   const canConfirm = step === 4 && isPatient;
@@ -503,7 +504,9 @@ export default function Book() {
         {step === 4 && !user && (
           <BookingLogin
             summary={`${service?.name ?? ""} · ${doctor?.name ?? ""}`}
-            when={date && timeRange && `${formatShortDate(date)} · ${timeRange}`}
+            when={
+              date && timeRange && `${formatShortDate(date)} · ${timeRange}`
+            }
             signupHref={`/signup?redirect=${encodeURIComponent(here)}`}
           />
         )}
@@ -541,7 +544,9 @@ export default function Book() {
                   className={`flex justify-between gap-4 py-2 text-sm ${only}`}
                 >
                   <dt className="text-gray-500">{k}</dt>
-                  <dd className="text-right font-medium text-ink">{v || "—"}</dd>
+                  <dd className="text-right font-medium text-ink">
+                    {v || "—"}
+                  </dd>
                 </div>
               ))}
             </dl>

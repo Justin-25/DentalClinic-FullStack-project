@@ -6,6 +6,14 @@ export function formatTime(hhmm) {
   return `${hour12}:${String(m).padStart(2, '0')} ${suffix}`;
 }
 
+export function formatTimeRange(start, minutes) {
+  const from = formatTime(start);
+  const to = formatTime(addMinutes(start, minutes));
+  const [fromClock, fromSuffix] = from.split(" ");
+  const toSuffix = to.split(" ")[1];
+  return fromSuffix === toSuffix ? `${fromClock} – ${to}` : `${from} – ${to}`;
+} 
+
 // '2026-10-03T18:04:26Z' -> 'Oct 2026
 export const formatMonthYear = (iso) => new Date(iso).toLocaleDateString('en-US', {
   month: 'short',
