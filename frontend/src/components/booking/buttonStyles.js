@@ -5,3 +5,7 @@ export const primaryBtn =
 
 export const secondaryBtn =
   "flex h-12 w-full items-center justify-center rounded-[10px] border border-gray-400 bg-white px-5 text-[15px] font-semibold text-ink transition-colors duration-200 ease-soft hover:border-brand";
+
+// same red as the Cancelled badge: for actions that can't be undone
+export const dangerBtn =
+  "flex h-11.5 w-full items-center justify-center rounded-[10px] bg-[#A12B2B] px-5 text-[15px] font-semibold text-white transition-colors duration-200 ease-soft hover:bg-[#872424] disabled:cursor-not-allowed disabled:opacity-60";

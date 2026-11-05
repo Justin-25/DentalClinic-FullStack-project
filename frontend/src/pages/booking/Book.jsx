@@ -13,10 +13,10 @@ import {
 } from "../../components/booking/buttonStyles";
 import ServiceCard from "../../components/ServiceCard";
 import DoctorCard from "../../components/DoctorCard";
+import Modal from "../../components/Modal";
 import {
   FaChevronLeft,
   FaChevronRight,
-  FaCircleExclamation,
   FaCheck,
 } from "react-icons/fa6";
 import {
@@ -562,32 +562,39 @@ export default function Book() {
                   You can cancel anytime from My appointments.
                 </p>
 
-                {bookM.error && (
-                  <div
-                    role="alert"
-                    className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-[13px] font-medium text-red-800 md:text-sm"
-                  >
-                    <FaCircleExclamation
-                      aria-hidden="true"
-                      className="mt-0.5 shrink-0"
-                    />
-                    {slotTaken ? (
-                      <span>
-                        Someone just booked this time. Please{" "}
-                        <button
-                          type="button"
-                          onClick={pickAnotherTime}
-                          className="font-semibold underline"
-                        >
-                          pick another one
-                        </button>
-                        .
-                      </span>
+                <Modal
+                  open={!!bookM.error}
+                  tone="error"
+                  title={
+                    slotTaken
+                      ? "This time was just booked"
+                      : "We couldn't complete your booking"
+                  }
+                  onClose={slotTaken ? pickAnotherTime : () => bookM.reset()}
+                  actions={
+                    slotTaken ? (
+                      <button
+                        type="button"
+                        onClick={pickAnotherTime}
+                        className={primaryBtn}
+                      >
+                        Pick another time
+                      </button>
                     ) : (
-                      bookM.error.message
-                    )}
-                  </div>
-                )}
+                      <button
+                        type="button"
+                        onClick={() => bookM.reset()}
+                        className={secondaryBtn}
+                      >
+                        Close
+                      </button>
+                    )
+                  }
+                >
+                  {slotTaken
+                    ? "Someone just booked this time. Please pick another one."
+                    : bookM.error?.message}
+                </Modal>
 
                 <MobileBar>{confirmButton}</MobileBar>
               </>

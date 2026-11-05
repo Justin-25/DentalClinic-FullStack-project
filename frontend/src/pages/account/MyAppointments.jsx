@@ -9,7 +9,7 @@ import {
 } from "../../components/booking/buttonStyles";
 import { toYMD } from "../../utils/format";
 
-const PAST_PAGE_SIZE = 3;
+const PAST_PAGE_SIZE = 5;
 
 const startsAt = (a) => `${a.date.slice(0, 10)} ${a.timeSlot}`;
 

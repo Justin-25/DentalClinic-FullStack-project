@@ -18,6 +18,7 @@ import BookingLayout from "./layouts/BookingLayout";
 import Book from "./pages/booking/Book";
 import PortalLayout from "./layouts/PortalLayout";
 import MyAppointments from "./pages/account/MyAppointments";
+import AppointmentDetail from "./pages/account/AppointmentDetail";
 
 export const router = createBrowserRouter([
   {
@@ -75,7 +76,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "account/appointments/:id",
-            element: <Placeholder title="Appointment detail" />,
+            element: <AppointmentDetail />,
           },
           {
             path: "account/appointments/:id/review",
