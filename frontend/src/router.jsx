@@ -19,6 +19,7 @@ import Book from "./pages/booking/Book";
 import PortalLayout from "./layouts/PortalLayout";
 import MyAppointments from "./pages/account/MyAppointments";
 import AppointmentDetail from "./pages/account/AppointmentDetail";
+import LeaveReview from "./pages/account/LeaveReview";
 
 export const router = createBrowserRouter([
   {
@@ -80,7 +81,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "account/appointments/:id/review",
-            element: <Placeholder title="Leave a review" />,
+            element: <LeaveReview />,
           },
           {
             path: "account/settings",
