@@ -14,8 +14,9 @@ export class ApiError extends Error {
 
 export async function api(path, { method = 'GET', body} =  {}) {
   const headers = {};
+  const isForm = body instanceof FormData;
 
-  if (body) headers['Content-Type'] = 'application/json';
+  if (body && !isForm) headers['Content-Type'] = 'application/json';
 
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -23,7 +24,7 @@ export async function api(path, { method = 'GET', body} =  {}) {
   const res = await fetch(`/api${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined
+    body: isForm ? body : body ? JSON.stringify(body) : undefined
   });
 
   if (res.status === 204) return null;

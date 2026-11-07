@@ -20,6 +20,7 @@ import PortalLayout from "./layouts/PortalLayout";
 import MyAppointments from "./pages/account/MyAppointments";
 import AppointmentDetail from "./pages/account/AppointmentDetail";
 import LeaveReview from "./pages/account/LeaveReview";
+import AccountSettings from "./pages/account/AccountSettings";
 
 export const router = createBrowserRouter([
   {
@@ -85,7 +86,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "account/settings",
-            element: <Placeholder title="Account settings" />,
+            element: <AccountSettings />,
           },
         ],
       },
