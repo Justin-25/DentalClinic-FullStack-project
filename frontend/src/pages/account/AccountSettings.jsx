@@ -1,3 +1,5 @@
+import DeleteAccount from "./settings/DeleteAccount";
+import PasswordForm from "./settings/PasswordForm";
 import ProfileForm from "./settings/ProfileForm";
 
 export default function AccountSettings() {
@@ -10,10 +12,10 @@ export default function AccountSettings() {
 
       <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
         <ProfileForm />
-        {/* 5b: <PasswordForm /> */}
+        <PasswordForm />
       </div>
 
-      {/* 5c: <DeleteAccount /> */}
+      <DeleteAccount />
     </div>
   );
 }

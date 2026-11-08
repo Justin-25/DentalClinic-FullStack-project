@@ -56,6 +56,14 @@ export function AuthProvider({ children }) {
     return startSession(res);
   }
 
+  async function updatePassword(form) {
+    const res = await api("/users/updateMyPassword", {
+      method: "PATCH",
+      body: form,
+    });
+    return startSession(res);
+  }
+
   function logout() {
     clearToken();
     queryClient.setQueryData(["me"], null);
@@ -67,6 +75,7 @@ export function AuthProvider({ children }) {
     login,
     signup,
     resetPassword,
+    updatePassword,
     logout,
   };
 
