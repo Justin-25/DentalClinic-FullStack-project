@@ -67,6 +67,9 @@ export function AuthProvider({ children }) {
   function logout() {
     clearToken();
     queryClient.setQueryData(["me"], null);
+    queryClient.removeQueries({
+      predicate: (query) => query.queryKey[0] !== "me",
+    });
   }
 
   const value = {
