@@ -18,8 +18,8 @@ export default function PortalLayout() {
   const firstName = user.name.split(" ")[0];
 
   function handleLogout() {
+    navigate("/", { replace: true, flushSync: true });
     logout();
-    navigate("/", { replace: true });
   }
 
   return (

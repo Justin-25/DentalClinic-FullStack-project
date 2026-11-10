@@ -45,7 +45,7 @@ export default function MyAppointments() {
       {appointmentsQ.isPending && (
         <p className="text-sm text-gray-500">Loading your appointments...</p>
       )}
-      {appointmentsQ.isError && (
+      {appointmentsQ.isError && !appointmentsQ.data && (
         <p className="text-sm text-gray-500">
           We couldn't load your appointments. Please try again.
         </p>

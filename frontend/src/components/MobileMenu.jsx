@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { FaChevronRight, FaXmark } from "react-icons/fa6";
 import { useAuth } from "../auth/AuthContext";
-import { PORTAL } from "../auth/portals";
+import { PORTAL } from "../auth/portal";
 import Logo from "./Logo";
 import { primaryBtn, secondaryBtn } from "./booking/buttonStyles";
 
@@ -41,8 +41,8 @@ export default function MobileMenu({ open, onClose }) {
 
   function handleLogout() {
     onClose();
+    navigate("/", { replace: true, flushSync: true });
     logout();
-    navigate("/", { replace: true });
   }
 
   return (
@@ -51,7 +51,7 @@ export default function MobileMenu({ open, onClose }) {
       aria-label="Menu"
       onCancel={(e) => {
         e.preventDefault();
-        logout();
+        onClose();
       }}
       className="modal m-0 h-dvh max-h-none w-full max-w-none bg-white md:hidden"
     >
@@ -110,6 +110,28 @@ export default function MobileMenu({ open, onClose }) {
           <Link to="/book" className={primaryBtn}>
             Book an appointment
           </Link>
+
+          {user ? (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className={secondaryBtn}
+            >
+              Log out
+            </button>
+          ) : (
+            <>
+              <Link to="/login" className={secondaryBtn}>
+                Log in
+              </Link>
+              <Link
+                to="/signup"
+                className="block pt-1 text-[13px] font-semibold text-brand"
+              >
+                New here? Create an account
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </dialog>

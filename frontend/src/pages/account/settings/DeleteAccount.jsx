@@ -20,8 +20,8 @@ export default function DeleteAccount() {
         method: "DELETE",
       }),
     onSuccess: () => {
+      navigate("/", { replace: true, flushSync: true });
       logout();
-      navigate("/", { replace: true });
     },
   });
 

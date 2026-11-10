@@ -31,8 +31,8 @@ export default function AccountMenu() {
 
   function handleLogout() {
     setOpen(false);
+    navigate("/", { replace: true, flushSync: true });
     logout();
-    navigate("/");
   }
 
   return (

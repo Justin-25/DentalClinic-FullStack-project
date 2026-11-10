@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Link, NavLink } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import AccountMenu from "./AccountMenu";
+import MobileMenu from "./MobileMenu";
 import Logo from "./Logo";
 
 export default function Header() {
   const { user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navClass = ({ isActive }) =>
     isActive
@@ -13,9 +16,9 @@ export default function Header() {
 
   return (
     <header className="border-b border-gray-200 bg-white">
-      <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 md:h-18">
         <Logo />
-        <nav className="flex items-center gap-8">
+        <nav className="hidden items-center gap-8 md:flex">
           <NavLink to="/services" className={navClass}>
             Services
           </NavLink>
@@ -38,7 +41,17 @@ export default function Header() {
           </Link>
           {user && <AccountMenu />}
         </nav>
+        <button
+          type="button"
+          onClick={() => setMenuOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={menuOpen}
+          className="text-[15px] font-semibold text-ink md:hidden"
+        >
+          Menu
+        </button>
       </div>
+      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </header>
   );
 }

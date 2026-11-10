@@ -10,8 +10,9 @@ export async function submitLogin(page, email, password = PASSWORD) {
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Log in", exact: true }).click();
-  // logged in = the login form has gone (works on phone and desktop headers)
-  await expect(page.getByRole("button", { name: "Log in", exact: true })).toBeHidden();
+  // logged in = the app has left the login page (the button label changes
+  // to "Logging in..." straight away, so it can't tell us we're done)
+  await expect(page).not.toHaveURL(/\/login/);
 }
 
 // Fresh start: load /login, then log in.
