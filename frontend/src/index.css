@@ -11,6 +11,11 @@
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
 };
 
+/* While a dialog is open (menu or modal), the page behind it doesn't scroll */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
 /* Reveal: hidden state is only ever added by JavaScript */
 .reveal-hidden {
   opacity: 0;

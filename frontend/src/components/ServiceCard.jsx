@@ -19,9 +19,7 @@ export default function ServiceCard({
 
       <div className="min-w-0 flex-1 space-y-1">
         <h2 className="text-base font-semibold text-ink">{name}</h2>
-        <p className="text-[13px] text-gray-500 truncate line-clamp-2">
-          {summary}
-        </p>
+        <p className="text-[13px] text-gray-500 line-clamp-2">{summary}</p>
         <p className="text-[13px] font-medium text-ink">
           {duration} min · ${priceDiscount ? priceDiscount : price}
           {priceDiscount && (

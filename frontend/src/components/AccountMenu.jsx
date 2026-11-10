@@ -2,21 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { FaChevronDown } from "react-icons/fa6";
 import { useAuth } from "../auth/AuthContext";
-
-const PORTAL = {
-  patient: {
-    to: "/account/appointments",
-    label: "My appointments",
-  },
-  doctor: {
-    to: "/doctor/appointments",
-    label: "Doctor portal",
-  },
-  admin: {
-    to: "/admin/appointments",
-    label: "Admin portal",
-  },
-};
+import { PORTAL } from "../auth/portal";
 
 export default function AccountMenu() {
   const { user, logout } = useAuth();
