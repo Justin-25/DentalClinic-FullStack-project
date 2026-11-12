@@ -21,6 +21,8 @@ import MyAppointments from "./pages/account/MyAppointments";
 import AppointmentDetail from "./pages/account/AppointmentDetail";
 import LeaveReview from "./pages/account/LeaveReview";
 import AccountSettings from "./pages/account/AccountSettings";
+import DoctorLayout from "./layouts/DoctorLayout";
+import DoctorAppointments from "./pages/doctor/DoctorAppointments";
 
 export const router = createBrowserRouter([
   {
@@ -32,15 +34,6 @@ export const router = createBrowserRouter([
       { path: "doctors", element: <Doctors /> },
       { path: "doctors/:doctorId", element: <DoctorProfile /> },
       { path: "reviews", element: <Reviews /> },
-      {
-        element: <RequireAuth roles={["doctor"]} />,
-        children: [
-          {
-            path: "doctor/appointments",
-            element: <Placeholder title="Doctor portal" />,
-          },
-        ],
-      },
       {
         element: <RequireAuth roles={["admin"]} />,
         children: [
@@ -88,6 +81,29 @@ export const router = createBrowserRouter([
             path: "account/settings",
             element: <AccountSettings />,
           },
+        ],
+      },
+    ],
+  },
+  {
+    element: <RequireAuth roles={["doctor"]} />,
+    children: [
+      {
+        element: <DoctorLayout />,
+        children: [
+          {
+            path: "doctor/appointments",
+            element: <DoctorAppointments />,
+          },
+          {
+            path: "doctor/appointments/:id",
+            element: <Placeholder title="Appointment details" />,
+          },
+          {
+            path: "doctor/schedule",
+            element: <Placeholder title="Schedule" />,
+          },
+          { path: "doctor/profile", element: <Placeholder title="Profile" /> },
         ],
       },
     ],

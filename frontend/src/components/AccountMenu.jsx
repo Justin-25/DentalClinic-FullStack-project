@@ -40,6 +40,7 @@ export default function AccountMenu() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
+        aria-label={`${firstName}, account menu`}
         aria-haspopup="menu"
         aria-expanded={open}
         className="flex items-center gap-2 rounded-full border border-gray-300 py-1.5 pl-1.5 pr-3 text-sm font-semibold text-ink transition-colors duration-150 ease-soft hover:border-brand"
@@ -49,7 +50,7 @@ export default function AccountMenu() {
           alt=""
           className="size-7 rounded-full object-cover"
         />
-        {firstName}
+        <span className="hidden sm:inline">{firstName}</span>
         <FaChevronDown
           aria-hidden="true"
           className={`text-[10px] text-gray-500 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
@@ -72,14 +73,16 @@ export default function AccountMenu() {
         >
           {portal.label}
         </Link>
-        <Link
-          role="menuitem"
-          to="/account/settings"
-          onClick={() => setOpen(false)}
-          className="block rounded-lg px-3 py-2 text-sm font-medium text-ink hover:bg-gray-100"
-        >
-          Account settings
-        </Link>
+        {user.role === "patient" && (
+          <Link
+            role="menuitem"
+            to="/account/settings"
+            onClick={() => setOpen(false)}
+            className="block rounded-lg px-3 py-2 text-sm font-medium text-ink hover:bg-gray-100"
+          >
+            Account settings
+          </Link>
+        )}
         <button
           role="menuitem"
           type="button"

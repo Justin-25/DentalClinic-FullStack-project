@@ -27,11 +27,10 @@ export default function MobileMenu({ open, onClose }) {
   const links = user
     ? [
         ...PUBLIC_LINKS,
-        {
-          to: PORTAL[user.role].to,
-          label: PORTAL[user.role].label,
-        },
-        { to: "/account/settings", label: "Account settings" },
+        PORTAL[user.role],
+        ...(user.role === "patient"
+          ? [{ to: "/account/settings", label: "Account settings" }]
+          : []),
       ]
     : PUBLIC_LINKS;
 

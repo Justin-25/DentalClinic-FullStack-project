@@ -8,9 +8,7 @@ import {
 import Header from "../components/Header";
 import { useAuth } from "../auth/AuthContext";
 import { primaryBtn } from "../components/booking/buttonStyles";
-
-const navItem = ({ isActive }) =>
-  `flex h-9.5 items-center rounded-lg px-3 text-[15px] ${isActive ? "bg-gray-100 font-semibold text-ink" : "font-medium text-gray-500"}`;
+import { navItem } from "./portalStyles";
 
 export default function PortalLayout() {
   const { user, logout } = useAuth();

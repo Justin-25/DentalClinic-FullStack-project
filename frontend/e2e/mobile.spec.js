@@ -75,6 +75,7 @@ test("Patient: the menu shows their pages, and Log out works", async ({ page }) 
   const menu = page.getByRole("dialog", { name: "Menu" });
 
   await expect(menu.getByText("Elena Reyes")).toBeVisible();
+  await expect(menu.getByRole("link", { name: "Account settings" })).toBeVisible();
   await menu.getByRole("link", { name: "My appointments" }).click();
   await expect(page).toHaveURL("/account/appointments");
   await expect(menu).toBeHidden();
