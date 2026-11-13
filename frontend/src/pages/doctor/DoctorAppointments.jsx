@@ -1,14 +1,9 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "../../api/client";
-import Modal from "../../components/Modal";
-import {
-  primaryBtn,
-  secondaryBtn,
-} from "../../components/booking/buttonStyles";
 import { formatLongDate, toYMD } from "../../utils/format";
 import AppointmentList from "./AppointmentList";
-import { CONFIRM_TITLE } from "./doctorActions";
+import { useStatusChange } from "./useStatusChange";
 
 const TABS = [
   ["today", "Today"],
@@ -34,25 +29,12 @@ function groupByDay(list) {
 }
 
 export default function DoctorAppointments() {
-  const queryClient = useQueryClient();
   const [tab, setTab] = useState("today");
-  const [confirming, setConfirming] = useState(null);
+  const { openConfirm, modal } = useStatusChange();
 
   const appointmentsQ = useQuery({
     queryKey: ["appointments", "mine"],
     queryFn: () => api("/appointments/myAppointments"),
-  });
-
-  const statusM = useMutation({
-    mutationFn: ({ id, status }) =>
-      api(`/appointments/${id}/status`, {
-        method: "PATCH",
-        body: {
-          status,
-        },
-      }),
-    onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: ["appointments"] }),
   });
 
   const all = appointmentsQ.data?.data.appointments ?? [];
@@ -63,22 +45,6 @@ export default function DoctorAppointments() {
   const todays = sorted.filter((a) => startsAt(a).slice(0, 10) === today);
   const upcoming = sorted.filter((a) => startsAt(a).slice(0, 10) > today);
   const list = tab === "today" ? todays : upcoming;
-
-  function openConfirm(appointment, action) {
-    statusM.reset();
-    setConfirming({ appointment, action });
-  }
-
-  function closeConfirm() {
-    if (!statusM.isPending) setConfirming(null);
-  }
-
-  function handleConfirm() {
-    statusM.mutate(
-      { id: confirming.appointment._id, status: confirming.action.status },
-      { onSuccess: () => setConfirming(null) },
-    );
-  }
 
   return (
     <div className="space-y-4 lg:space-y-5">
@@ -141,51 +107,7 @@ export default function DoctorAppointments() {
         </div>
       )}
 
-      <Modal
-        open={confirming !== null}
-        tone={statusM.isError ? "error" : undefined}
-        title={
-          statusM.isError
-            ? "We couldn't update this appointment"
-            : confirming &&
-              CONFIRM_TITLE[confirming.action.status](
-                confirming.appointment.patient?.name,
-              )
-        }
-        onClose={closeConfirm}
-        actions={
-          statusM.isError ? (
-            <button
-              type="button"
-              onClick={closeConfirm}
-              className={secondaryBtn}
-            >
-              Close
-            </button>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={closeConfirm}
-                disabled={statusM.isPending}
-                className={`${secondaryBtn} disabled:cursor-not-allowed disabled:opacity-60`}
-              >
-                Not now
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirm}
-                disabled={statusM.isPending}
-                className={primaryBtn}
-              >
-                {statusM.isPending ? "Saving..." : confirming?.action.label}
-              </button>
-            </>
-          )
-        }
-      >
-        {statusM.isError ? statusM.error.message : "This can't be undone."}
-      </Modal>
+      {modal}
     </div>
   );
 }

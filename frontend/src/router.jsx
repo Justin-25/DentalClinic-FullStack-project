@@ -23,6 +23,7 @@ import LeaveReview from "./pages/account/LeaveReview";
 import AccountSettings from "./pages/account/AccountSettings";
 import DoctorLayout from "./layouts/DoctorLayout";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
+import DoctorAppointmentDetail from "./pages/doctor/DoctorAppointmentDetail";
 
 export const router = createBrowserRouter([
   {
@@ -97,7 +98,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "doctor/appointments/:id",
-            element: <Placeholder title="Appointment details" />,
+            element: <DoctorAppointmentDetail />,
           },
           {
             path: "doctor/schedule",
