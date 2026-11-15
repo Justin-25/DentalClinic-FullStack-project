@@ -13,7 +13,6 @@ import Signup from "./pages/auth/Signup";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import RequireAuth from "./pages/auth/RequireAuth";
-import Placeholder from "./pages/Placeholder";
 import BookingLayout from "./layouts/BookingLayout";
 import Book from "./pages/booking/Book";
 import PortalLayout from "./layouts/PortalLayout";
@@ -32,6 +31,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import EditUser from "./pages/admin/EditUser";
 import AdminServices from "./pages/admin/AdminServices";
 import ServiceForm from "./pages/admin/ServiceForm";
+import AdminReviews from "./pages/admin/AdminReviews";
 
 export const router = createBrowserRouter([
   {
@@ -120,7 +120,7 @@ export const router = createBrowserRouter([
           { path: "admin/services", element: <AdminServices /> },
           { path: "admin/services/new", element: <ServiceForm /> },
           { path: "admin/services/:serviceId/edit", element: <ServiceForm /> },
-          { path: "admin/reviews", element: <Placeholder title="Reviews" /> },
+          { path: "admin/reviews", element: <AdminReviews /> },
         ],
       },
     ],
