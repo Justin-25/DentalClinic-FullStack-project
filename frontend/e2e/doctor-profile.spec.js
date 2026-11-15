@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { login, DOCTOR } from "./helpers";
+import { login, DOCTOR, parseMultipart } from "./helpers";
 
 // Saves are faked: a real save would change the seed doctor everyone sees on the public pages.
 
@@ -7,14 +7,6 @@ const PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
   "base64",
 );
-
-// "name" -> value for text fields, "photo" -> { filename } for the file
-function parseMultipart(body) {
-  const fields = {};
-  const part = /name="([^"]+)"(; filename="([^"]*)")?\r\n(?:Content-Type: [^\r\n]*\r\n)?\r\n([\s\S]*?)\r\n--/g;
-  for (const m of body.matchAll(part)) fields[m[1]] = m[2] ? { filename: m[3] } : m[4];
-  return fields;
-}
 
 // PATCH /users/myAccount answers with the real user plus the sent fields; GET passes through.
 async function fakeProfileSave(page, { fail } = {}) {

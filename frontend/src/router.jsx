@@ -30,6 +30,8 @@ import AdminLayout from "./layouts/AdminLayout";
 import AdminAppointments from "./pages/admin/AdminAppointments";
 import AdminUsers from "./pages/admin/AdminUsers";
 import EditUser from "./pages/admin/EditUser";
+import AdminServices from "./pages/admin/AdminServices";
+import ServiceForm from "./pages/admin/ServiceForm";
 
 export const router = createBrowserRouter([
   {
@@ -115,7 +117,9 @@ export const router = createBrowserRouter([
           { path: "admin/appointments", element: <AdminAppointments /> },
           { path: "admin/users", element: <AdminUsers /> },
           { path: "admin/users/:userId", element: <EditUser /> },
-          { path: "admin/services", element: <Placeholder title="Services" /> },
+          { path: "admin/services", element: <AdminServices /> },
+          { path: "admin/services/new", element: <ServiceForm /> },
+          { path: "admin/services/:serviceId/edit", element: <ServiceForm /> },
           { path: "admin/reviews", element: <Placeholder title="Reviews" /> },
         ],
       },

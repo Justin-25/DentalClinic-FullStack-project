@@ -28,3 +28,11 @@ export async function openFromAccountMenu(page, item) {
   await page.locator('button[aria-haspopup="menu"]').click();
   await page.getByRole("menuitem", { name: item }).click();
 }
+
+// A multipart (FormData) request body -> { field: value }, or { filename } for a file field.
+export function parseMultipart(body) {
+  const fields = {};
+  const part = /name="([^"]+)"(; filename="([^"]*)")?\r\n(?:Content-Type: [^\r\n]*\r\n)?\r\n([\s\S]*?)\r\n--/g;
+  for (const m of body.matchAll(part)) fields[m[1]] = m[2] ? { filename: m[3] } : m[4];
+  return fields;
+}

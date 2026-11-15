@@ -15,20 +15,32 @@ export const textLink =
   "text-[13px] font-semibold text-brand transition-colors duration-150 ease-soft hover:text-brand-dark";
 
 // a labelled <select> for the filter row; options are [value, label] pairs
-export function FilterSelect({ label, value, onChange, options, className = "" }) {
+export function FilterSelect({ label, value, onChange, options, error, className = "" }) {
   const id = useId();
   return (
     <div className={`space-y-1.5 ${className}`}>
       <label htmlFor={id} className="block text-[13px] font-medium text-ink">
         {label}
       </label>
-      <select id={id} value={value} onChange={(e) => onChange(e.target.value)} className={fieldClass}>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${id}-error` : undefined}
+        className={`${fieldClass} ${error ? "border-red-400" : ""}`}
+      >
         {options.map(([v, l]) => (
           <option key={v} value={v}>
             {l}
           </option>
         ))}
       </select>
+      {error && (
+        <p id={`${id}-error`} className="text-[12px] font-medium text-red-700">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
