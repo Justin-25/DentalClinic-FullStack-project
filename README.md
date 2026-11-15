@@ -16,8 +16,9 @@ The app is **Tooth Fairy Dentistry**: a **React** frontend (patients, doctors
 and admins each get their own portal) on top of a RESTful **Node.js, Express
 and MongoDB** API. Both halves are complete and documented below.
 
-**Live demo:** _add your Vercel link here_ (free hosting: after a quiet spell,
-the first data can take up to a minute while the API server wakes up)
+**Live demo:** https://dental-clinic-three-kappa.vercel.app (free hosting:
+after a quiet spell, the first data can take up to a minute while the API
+server wakes up)
 
 ![Home page](docs/screenshots/home.png)
 

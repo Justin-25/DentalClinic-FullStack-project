@@ -13,7 +13,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      # proxies in front of the app: Vercel + Render (see app.js); checked after the first deploy
+      # proxies to trust in front of the app (see app.js). Checked live: with 2, the limiters
+      # see Render's rotating proxy addresses rather than each visitor, so limits are loose
+      # (nobody is locked out by others, and a made-up X-Forwarded-For doesn't help either).
+      # Finding the exact value needs a look at the forwarded headers on the live server.
       - key: TRUST_PROXY
         value: "2"
       # the live demo's own database, next to the dev one in the same Atlas cluster
