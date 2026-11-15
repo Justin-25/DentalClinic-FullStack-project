@@ -12,10 +12,178 @@ naturally calls for all of these pieces: accounts with different roles, a
 public service catalog, doctor availability and appointment booking, and
 patient reviews, without being a trivial CRUD exercise.
 
-The project is being built in stages. The **backend** — a RESTful API built
-with Node.js, Express, and MongoDB — is complete and documented below. The
-**frontend** (React) is in progress and will be documented here once it is
-finished.
+The app is **Tooth Fairy Dentistry**: a **React** frontend (patients, doctors
+and admins each get their own portal) on top of a RESTful **Node.js, Express
+and MongoDB** API. Both halves are complete and documented below.
+
+**Live demo:** _add your Render link here_ (free hosting: the first visit after
+a quiet spell can take up to a minute to wake the server)
+
+![Home page](docs/screenshots/home.png)
+
+| | |
+|---|---|
+| ![Booking: choose a service](docs/screenshots/booking.png) | ![Patient: my appointments](docs/screenshots/patient-appointments.png) |
+| ![Doctor: weekly hours and days off](docs/screenshots/doctor-schedule.png) | ![Admin: all appointments](docs/screenshots/admin-appointments.png) |
+| ![Services catalog](docs/screenshots/services.png) | ![Admin: services](docs/screenshots/admin-services.png) |
+
+<p>
+  <img src="docs/screenshots/home-phone.png" alt="Home page on a phone" width="240">
+  <img src="docs/screenshots/booking-phone.png" alt="Booking on a phone" width="240">
+</p>
+
+---
+
+## Try it
+
+Every demo account uses the password **`Demo1234!`**.
+
+| Role | Email | What to try |
+|---|---|---|
+| Patient | `elena.reyes@example.com` | Book a visit, see it in *My appointments*, cancel it, leave a review on a completed visit |
+| Doctor | `mei.chen@toothfairy.example` | Confirm or complete visits, set weekly hours and days off, edit the public profile |
+| Admin | `admin@toothfairy.example` | Manage every appointment, user, service and review |
+
+A short tour that follows one booking through all three roles:
+
+1. **As the patient**, click **Book now**: choose a service, pick **Dr. Mei Chen**,
+   then a day and one of the open times, and confirm. The visit appears in
+   **My appointments** as *Pending*.
+2. **As the doctor**, open **Appointments → Upcoming** and **Confirm** the new
+   visit. Then open **Schedule**: add a day off or change the hours, and the
+   booking page only offers times inside them. **Profile** shows a live
+   preview of the card patients see.
+3. **As the admin**, open **Appointments**: filter by status, dentist or date,
+   and **View ›** a visit to complete or cancel it (with a reason). If a
+   status was set by mistake, **Correct status…** fixes it.
+4. Still as the admin: change a user's role or deactivate them in **Users**;
+   add or edit a service in **Services** (mark it *Unlisted* and use
+   **Copy link** to share it privately); remove a review in **Reviews**.
+
+Want a clean slate? `npm run seed:reset` (in `backend/dentalClinic`) wipes the
+demo database and loads the demo data again.
+
+---
+
+## Frontend
+
+### Tech stack
+
+| | |
+|---|---|
+| UI | React 19, React Router |
+| Server data | TanStack Query (caching, background refresh, cache updates after saves) |
+| Styling | Tailwind CSS v4, Inter font; designed in Figma first |
+| Build | Vite |
+| Tests | Playwright end-to-end tests in a real browser (desktop and phone sizes), ESLint |
+
+### Features
+
+**Public site**
+- Home, a services catalog with sale prices, service details, a dentist
+  directory with star ratings, and clinic and dentist reviews
+- A four-step booking flow (service → dentist → time → confirm) that only
+  offers real open times from the API's availability endpoint
+- Unlisted services stay out of the catalog, but anyone with the link can
+  still view and book them
+
+**Accounts**
+- Sign up, log in, forgot and reset password
+- Account settings: profile and photo, change password, delete account
+- Pages are protected by role: patients, doctors and admins each see only
+  their own portal
+
+**Patient portal**: upcoming and past appointments, appointment details,
+cancelling, and leaving a review after a completed visit
+
+**Doctor portal**
+- *Today* and *Upcoming* appointments with Confirm / Complete / No-show
+- Weekly hours (including split shifts such as a lunch break) and days off
+- Public profile editor (photo, specialization, experience, bio) with a live
+  preview of the card patients see
+
+**Admin portal**
+- Every appointment with filters, search and pages; status changes, cancelling
+  with a reason, and correcting a status set by mistake
+- Users: edit details and roles, deactivate and reactivate (admins can't
+  demote or deactivate themselves)
+- Services: create and edit with a cover image, sale price and an *Unlisted*
+  switch, delete and restore, copy a share link
+- Reviews: browse by type and dentist, and remove a review
+
+**Quality**
+- Works from phone to desktop, with no sideways scrolling
+- Accessible: labelled form fields, keyboard-friendly native dialogs for
+  confirmations, and form errors shown next to the field they belong to
+- Calm motion that respects the system's *reduce motion* setting
+- 12 Playwright test files covering the main flows of every portal
+
+### Project structure
+
+```
+frontend/
+├── src/
+│   ├── api/          # fetch wrapper: adds the login token, turns API errors into ApiError
+│   ├── components/   # shared pieces: header, cards, Modal, status badges, booking steps
+│   ├── layouts/      # public, auth, booking, patient, doctor and admin layouts
+│   ├── pages/        # one folder per area: account, booking, doctor, admin, ...
+│   ├── utils/        # date and time formatting
+│   └── router.jsx    # every route, with role checks
+├── e2e/              # Playwright tests
+└── scripts/          # screenshots for this README (npm run screenshots)
+```
+
+---
+
+## Running the whole app locally
+
+You need Node.js 22.12 or newer and a MongoDB database (e.g. a free MongoDB Atlas
+cluster).
+
+1. **Backend**: create `backend/dentalClinic/config.env` (see the variables
+   under *Backend → Running locally* below), then:
+   ```
+   cd backend/dentalClinic
+   npm install
+   node dev-data/import-dev-data.js --import   # load the demo data (once)
+   npm run start:dev                           # API on http://localhost:3000
+   ```
+2. **Frontend**, in a second terminal:
+   ```
+   cd frontend
+   npm install
+   npm run dev                                 # app on http://localhost:5173
+   ```
+   Vite forwards `/api` and `/img` requests to the backend, so no extra setup
+   is needed.
+3. **Tests** (optional): `npm run test:e2e` in `frontend` runs the Playwright
+   tests. It starts both servers if they aren't running yet.
+
+---
+
+## Deploying (Render)
+
+The live demo runs as **one free Render web service**: in production, Express
+also serves the built React app (`frontend/dist`), so the site and the API
+share one URL. The settings are in [`render.yaml`](render.yaml).
+
+1. **MongoDB Atlas → Network Access**: allow access from anywhere
+   (`0.0.0.0/0`), because Render's free plan has no fixed IP address.
+2. **Demo database**: the live site uses its own database,
+   `toothfairy-demo`, in the same cluster. Fill it once with
+   `npm run seed:reset` (in `backend/dentalClinic`).
+3. **Render**: *New → Blueprint*, connect this GitHub repository and fill in
+   the secrets it asks for (`DATABASE_URL`, `DATABASE_PASSWORD` and the four
+   `EMAIL_*` values, copied from `config.env`). `JWT_SECRET_KEY` is generated
+   for you.
+4. When the first deploy finishes, open the `onrender.com` link and put it at
+   the top of this README.
+
+Notes: every push to `main` redeploys the site. Uploaded photos are stored on
+the server's disk, which the free plan resets on each deploy, so uploads
+disappear then (the demo data's images are part of the repository and always
+come back). Password-reset emails go to a Mailtrap test inbox, not to real
+mailboxes.
 
 ---
 
@@ -128,6 +296,7 @@ Requires a `config.env` file (not committed) in `backend/dentalClinic/` with:
 |---|---|
 | `NODE_ENV`, `PORT` | environment and server port |
 | `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD` | MongoDB connection |
+| `DATABASE_NAME` (optional) | use another database in the same cluster (the live demo uses `toothfairy-demo`) |
 | `JWT_SECRET_KEY`, `JWT_EXPIRES_IN` | token signing and lifetime |
 | `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USERNAME`, `EMAIL_PASSWORD` | SMTP for password-reset emails |
-| `FRONTEND_URL` | base URL used in password-reset email links |
+| `FRONTEND_URL` | base URL used in password-reset email links (on Render it falls back to the site's own address) |

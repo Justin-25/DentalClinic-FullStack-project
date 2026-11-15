@@ -19,8 +19,8 @@ export default defineConfig([
     },
   },
   {
-    // Playwright tests and config run in Node, not the browser
-    files: ['e2e/**/*.js', 'playwright.config.js'],
+    // Playwright tests, config and scripts run in Node, not the browser
+    files: ['e2e/**/*.js', 'scripts/**/*.js', 'playwright.config.js'],
     languageOptions: { globals: globals.node },
   },
 ])
