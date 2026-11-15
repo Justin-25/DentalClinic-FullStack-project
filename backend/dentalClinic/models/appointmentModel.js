@@ -57,8 +57,10 @@ appointmentSchema.index({
   timeSlot: 1
 }, { 
   unique: true, 
-  partialFilterExpression: { 
-    status: mongoose.trusted({ $ne: 'cancelled' }) 
+  // every status except cancelled (a cancel frees the slot). MongoDB doesn't allow $ne
+  // in a partial index, so the index was never built with { $ne: 'cancelled' }.
+  partialFilterExpression: {
+    status: mongoose.trusted({ $in: ['pending', 'confirmed', 'completed', 'no-show'] })
   }
 });
 
