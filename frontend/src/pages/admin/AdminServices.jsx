@@ -45,6 +45,18 @@ export default function AdminServices() {
     onSettled: refresh,
   });
 
+  // "Copy link" for unlisted services: the page patients open (and book from) by direct link
+  const [copied, setCopied] = useState(null); // { id, ok, url }
+  async function copyLink(s) {
+    const url = `${window.location.origin}/services/${s.slug}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied({ id: s._id, ok: true, url });
+    } catch {
+      setCopied({ id: s._id, ok: false, url }); // no clipboard access: show the link to copy by hand
+    }
+  }
+
   function askDelete(s) {
     deleteM.reset();
     setDeleting(s);
@@ -72,6 +84,14 @@ export default function AdminServices() {
         <button type="button" onClick={() => askDelete(s)} aria-label={`Delete ${s.name}`} className={textLink}>
           Delete
         </button>
+        {s.secretService && (
+          <>
+            <span className="px-1.5 text-gray-400" aria-hidden="true">·</span>
+            <button type="button" onClick={() => copyLink(s)} aria-label={`Copy link to ${s.name}`} className={textLink}>
+              Copy link
+            </button>
+          </>
+        )}
       </span>
     );
 
@@ -90,6 +110,13 @@ export default function AdminServices() {
           </Link>
         </div>
       </div>
+
+      {copied && (
+        <p role="status" className="break-all rounded-lg bg-gray-100 px-3.5 py-3 text-[13px] font-medium text-ink">
+          {copied.ok ? "Link copied: " : "Copy this link: "}
+          <span className="font-normal text-gray-500">{copied.url}</span>
+        </p>
+      )}
 
       {restoreM.isError && (
         <p role="alert" className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-[13px] font-medium text-red-800">
@@ -156,8 +183,8 @@ export default function AdminServices() {
           </ul>
 
           <p className="text-[12px] text-gray-500">
-            Unlisted = hidden from the catalog and booking; its page still opens from a direct link. Deleted = hidden
-            everywhere until restored.
+            Unlisted = hidden from the public catalog, but anyone with its link can view and book it (use Copy link).
+            Deleted = hidden everywhere until restored.
           </p>
         </>
       )}

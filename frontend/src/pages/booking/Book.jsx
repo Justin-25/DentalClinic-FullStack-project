@@ -51,6 +51,14 @@ export default function Book() {
     queryFn: () => api("/services"),
   });
 
+  // an unlisted service (opened from a shared link) isn't in the public list: fetch it on its own
+  const listedService = servicesQ.data?.data.services.find((s) => s.id === serviceId);
+  const unlistedQ = useQuery({
+    queryKey: ["service", "id", serviceId],
+    queryFn: () => api(`/services/${serviceId}`),
+    enabled: !!serviceId && servicesQ.isSuccess && !listedService,
+  });
+
   const doctorsQ = useQuery({
     queryKey: ["doctors"],
     queryFn: () => api("/doctors"),
@@ -119,7 +127,7 @@ export default function Book() {
 
   const services = servicesQ.data?.data.services ?? [];
   const doctors = doctorsQ.data?.data.doctors ?? [];
-  const service = services.find((s) => s.id === serviceId);
+  const service = listedService ?? unlistedQ.data?.data.service;
   const doctor = doctors.find((d) => d.id === doctorId);
   const schedule = scheduleQ.data?.data.schedule;
   const isOff = (ymd) => {

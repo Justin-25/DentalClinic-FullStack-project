@@ -24,7 +24,7 @@ async function fakeServices(page) {
     [
       service("s1", { name: "Teeth Cleaning", category: "Preventive & Diagnostic", price: 80, duration: 45, summary: "A cleaning." }),
       service("s2", { name: "Teeth Whitening", category: "Cosmetic", price: 300, priceDiscount: 250, duration: 90, summary: "Whiter teeth." }),
-      service("s3", { name: "Sedation Consult", category: "Consultation", price: 90, duration: 30, summary: "Talk it over.", secretService: true }),
+      service("s3", { name: "Sedation Consult", slug: "sedation-consult", category: "Consultation", price: 90, duration: 30, summary: "Talk it over.", secretService: true }),
       service("s4", { name: "Gum Contouring", category: "Cosmetic", price: 400, duration: 60, summary: "Reshape gums.", active: false }),
     ].map((s) => [s._id, s]),
   );
@@ -100,6 +100,21 @@ test.describe("Admin services (desktop)", () => {
       { method: "DELETE", id: "s1" },
       { method: "RESTORE", id: "s4" },
     ]);
+  });
+
+  test("an unlisted service has Copy link, which copies its page address", async ({ page }) => {
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await fakeServices(page);
+    await login(page, ADMIN);
+    await page.goto("/admin/services");
+
+    // only unlisted services get it: public ones are in the catalog anyway
+    await expect(page.getByRole("button", { name: /^Copy link/ })).toHaveCount(1);
+    await page.getByRole("button", { name: "Copy link to Sedation Consult" }).click();
+
+    const url = "http://localhost:5173/services/sedation-consult";
+    await expect(page.getByRole("status")).toHaveText(`Link copied: ${url}`);
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(url);
   });
 
   test("a new service is checked, then created with its cover and visibility", async ({ page }) => {
