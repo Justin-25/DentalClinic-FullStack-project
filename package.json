@@ -1,0 +1,12 @@
+{
+  "name": "tooth-fairy-dentistry",
+  "private": true,
+  "description": "Builds the React app and starts the API that serves it (used by Render).",
+  "scripts": {
+    "build": "npm ci --include=dev --prefix frontend && npm run build --prefix frontend && npm ci --prefix backend/dentalClinic",
+    "start": "npm run start:prod --prefix backend/dentalClinic"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

@@ -1,7 +1,8 @@
 {
   "scripts": {
     "start:dev": "nodemon server.js",
-    "start:prod": "cross-env NODE_ENV=production node server.js"
+    "start:prod": "cross-env NODE_ENV=production node server.js",
+    "seed:reset": "node dev-data/import-dev-data.js --reset --db toothfairy-demo"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

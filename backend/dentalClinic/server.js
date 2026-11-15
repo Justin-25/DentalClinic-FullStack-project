@@ -18,8 +18,11 @@ const DB = process.env.DATABASE_URL.replace(
   process.env.DATABASE_PASSWORD
 );
 
-mongoose.connect(DB).then(() => {
-  console.log(`DB connection successfully!!!`);
+// DATABASE_NAME (optional) picks another database in the same cluster, e.g. the live demo's
+const options = process.env.DATABASE_NAME ? { dbName: process.env.DATABASE_NAME } : {};
+
+mongoose.connect(DB, options).then(() => {
+  console.log(`DB connection successfully!!! (${mongoose.connection.name})`);
 });
 
 app.listen(port, () => {

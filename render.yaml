@@ -1,0 +1,33 @@
+# Render Blueprint: one free web service that builds the React app and runs the API,
+# which also serves the app. Secrets marked "sync: false" are asked for when you create it.
+services:
+  - type: web
+    name: tooth-fairy-dentistry
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/services
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # the live demo's own database, next to the dev one in the same Atlas cluster
+      - key: DATABASE_NAME
+        value: toothfairy-demo
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      # password-reset emails (a Mailtrap test inbox)
+      - key: EMAIL_HOST
+        sync: false
+      - key: EMAIL_PORT
+        sync: false
+      - key: EMAIL_USERNAME
+        sync: false
+      - key: EMAIL_PASSWORD
+        sync: false

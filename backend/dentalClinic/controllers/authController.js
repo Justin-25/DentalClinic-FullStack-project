@@ -162,7 +162,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     
     try {
       // Send it to user's email
-      const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+      // on Render, RENDER_EXTERNAL_URL is the site's own address (set by Render itself)
+      const siteURL = process.env.FRONTEND_URL || process.env.RENDER_EXTERNAL_URL;
+      const resetURL = `${siteURL}/reset-password/${resetToken}`;
 
       await sendEmail({
         email: user.email,
