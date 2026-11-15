@@ -24,9 +24,10 @@ exports.getAllServices = catchAsync(async (req, res, next) => {
 
 // Get Service
 exports.getService = catchAsync(async (req, res, next) => {
-  const service = await Service.findOne({
-    slug: req.params.slug
-  });
+  // by slug (the service page) or by id (booking an unlisted service from a shared link)
+  const key = req.params.slug;
+  const byId = /^[a-f\d]{24}$/i.test(key);
+  const service = await Service.findOne(byId ? { _id: key } : { slug: key });
   
   if (!service) {
     return next(new AppError('Service not found...', 404, ErrorCodes.RESOURCE_NOT_FOUND));
