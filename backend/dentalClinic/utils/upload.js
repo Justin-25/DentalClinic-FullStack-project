@@ -22,7 +22,11 @@ const upload = multer({
 exports.uploadUserPhoto = upload.single('photo');
 exports.uploadServiceCover = upload.single('imageCover');
 
+// Photo and cover names come only from an uploaded file. A name sent as plain text
+// (e.g. "photo": "<someone else's photo>.jpeg") is dropped before the controller sees it.
+
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+  delete req.body.photo;
   if (!req.file) return next();
 
   const filename = `user-${req.user.id}-${Date.now()}.jpeg`;
@@ -36,6 +40,7 @@ exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
 });
 
 exports.resizeServiceCover = catchAsync(async (req, res, next) => {
+  delete req.body.imageCover;
   if (!req.file) return next();
 
   const filename = `service-${req.params.serviceId || new mongoose.Types.ObjectId()}-${Date.now()}.jpeg`;

@@ -91,7 +91,8 @@ exports.getUser = catchAsync(async (req, res, next) => {
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
-  const allowed = ['name', 'email', 'photo'];
+  // no 'photo': a photo is only set by its owner uploading a file (PATCH /myAccount)
+  const allowed = ['name', 'email'];
 
   const filteredBody = filterObj(req.body, 'role', 'active', ...allowed);
 
