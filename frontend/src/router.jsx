@@ -28,6 +28,8 @@ import DoctorSchedule from "./pages/doctor/DoctorSchedule";
 import EditProfile from "./pages/doctor/EditProfile";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminAppointments from "./pages/admin/AdminAppointments";
+import AdminUsers from "./pages/admin/AdminUsers";
+import EditUser from "./pages/admin/EditUser";
 
 export const router = createBrowserRouter([
   {
@@ -111,7 +113,8 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { path: "admin/appointments", element: <AdminAppointments /> },
-          { path: "admin/users", element: <Placeholder title="Users" /> },
+          { path: "admin/users", element: <AdminUsers /> },
+          { path: "admin/users/:userId", element: <EditUser /> },
           { path: "admin/services", element: <Placeholder title="Services" /> },
           { path: "admin/reviews", element: <Placeholder title="Reviews" /> },
         ],

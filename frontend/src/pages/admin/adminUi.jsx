@@ -3,7 +3,7 @@ import { useId } from "react";
 // Shared bits of the admin tables: filters, table cells, the Prev / Next pager.
 
 export const fieldClass =
-  "h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-ink outline-none transition-colors duration-150 ease-soft placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-ink outline-none transition-colors duration-150 ease-soft placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-brand/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500";
 
 export const tableBox = "hidden overflow-hidden rounded-xl border border-gray-300 lg:block";
 export const theadClass = "bg-gray-100 text-[12px] uppercase text-gray-500";
