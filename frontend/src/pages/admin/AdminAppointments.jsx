@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../api/client";
 import StatusBadge from "../../components/StatusBadge";
@@ -11,6 +12,7 @@ import {
   SearchField,
   tableBox,
   td,
+  textLink,
   th,
   theadClass,
 } from "./adminUi";
@@ -38,6 +40,14 @@ const RANGES = [
 const dayOf = (a) => a.date.slice(0, 10);
 const startsAt = (a) => `${dayOf(a)} ${a.timeSlot}`;
 const when = (a) => `${formatMonthDay(dayOf(a))} · ${formatTime(a.timeSlot)}`;
+
+function ViewLink({ appointment: a }) {
+  return (
+    <Link to={`/admin/appointments/${a._id}`} aria-label={`View ${a.patient?.name ?? "appointment"}, ${when(a)}`} className={textLink}>
+      View ›
+    </Link>
+  );
+}
 
 function inRange(ymd, range) {
   const today = toYMD(new Date());
@@ -120,6 +130,9 @@ export default function AdminAppointments() {
                   <th className={th}>Dentist</th>
                   <th className={th}>Service</th>
                   <th className={th}>Status</th>
+                  <th className={th}>
+                    <span className="sr-only">Details</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -131,6 +144,9 @@ export default function AdminAppointments() {
                     <td className={td}>{a.service?.name}</td>
                     <td className={td}>
                       <StatusBadge status={a.status} />
+                    </td>
+                    <td className={td}>
+                      <ViewLink appointment={a} />
                     </td>
                   </tr>
                 ))}
@@ -149,6 +165,7 @@ export default function AdminAppointments() {
                   {a.service?.name} · {a.doctor?.name}
                 </p>
                 <p className="text-[13px] text-gray-500">{when(a)}</p>
+                <ViewLink appointment={a} />
               </li>
             ))}
           </ul>
