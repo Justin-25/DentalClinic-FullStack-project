@@ -16,8 +16,8 @@ The app is **Tooth Fairy Dentistry**: a **React** frontend (patients, doctors
 and admins each get their own portal) on top of a RESTful **Node.js, Express
 and MongoDB** API. Both halves are complete and documented below.
 
-**Live demo:** _add your Render link here_ (free hosting: the first visit after
-a quiet spell can take up to a minute to wake the server)
+**Live demo:** _add your Vercel link here_ (free hosting: after a quiet spell,
+the first data can take up to a minute while the API server wakes up)
 
 ![Home page](docs/screenshots/home.png)
 
@@ -61,7 +61,10 @@ A short tour that follows one booking through all three roles:
    **Copy link** to share it privately); remove a review in **Reviews**.
 
 Want a clean slate? `npm run seed:reset` (in `backend/dentalClinic`) wipes the
-demo database and loads the demo data again.
+demo database and loads the demo data again. Loading moves the demo visits to
+fit the current date (in whole weeks, so weekdays and working hours still
+match), so there are always past visits to review and upcoming ones to confirm.
+Run it again before sharing the demo if a few weeks have passed.
 
 ---
 
@@ -161,29 +164,46 @@ cluster).
 
 ---
 
-## Deploying (Render)
+## Deploying (free: Vercel + Render + Atlas)
 
-The live demo runs as **one free Render web service**: in production, Express
-also serves the built React app (`frontend/dist`), so the site and the API
-share one URL. The settings are in [`render.yaml`](render.yaml).
+```
+Visitor → Vercel (React app)
+            └─ /api and /img are forwarded → Render (Express API) → MongoDB Atlas
+```
+
+- **Vercel** hosts the built React app. [`frontend/vercel.json`](frontend/vercel.json)
+  forwards `/api` and `/img` to the API, so the app's code is the same as in
+  development, and no CORS setup is needed.
+- **Render** runs the Express API as one free web service
+  ([`render.yaml`](render.yaml)). It also serves its own copy of the app, which
+  is handy for checking the API on its own.
+- **MongoDB Atlas** holds the data. The live site uses its own database,
+  `toothfairy-demo`, next to the development one.
+
+Steps:
 
 1. **MongoDB Atlas → Network Access**: allow access from anywhere
    (`0.0.0.0/0`), because Render's free plan has no fixed IP address.
-2. **Demo database**: the live site uses its own database,
-   `toothfairy-demo`, in the same cluster. Fill it once with
-   `npm run seed:reset` (in `backend/dentalClinic`).
-3. **Render**: *New → Blueprint*, connect this GitHub repository and fill in
+2. **Demo database**: fill it with `npm run seed:reset` (in
+   `backend/dentalClinic`).
+3. **Render**: *New → Blueprint*, connect this GitHub repository, and fill in
    the secrets it asks for (`DATABASE_URL`, `DATABASE_PASSWORD` and the four
    `EMAIL_*` values, copied from `config.env`). `JWT_SECRET_KEY` is generated
-   for you.
-4. When the first deploy finishes, open the `onrender.com` link and put it at
-   the top of this README.
+   for you. When it's live, `https://<name>.onrender.com/api/services` shows
+   JSON. If Render gave the service a different name than
+   `tooth-fairy-dentistry`, update the two Render addresses in
+   `frontend/vercel.json`.
+4. **Vercel**: *Add New → Project*, import this repository, set **Root
+   Directory** to `frontend` (Vite is detected), and deploy.
+5. **Optional, on Render**: set `FRONTEND_URL` to the Vercel address, so
+   password-reset emails link to it.
 
-Notes: every push to `main` redeploys the site. Uploaded photos are stored on
-the server's disk, which the free plan resets on each deploy, so uploads
-disappear then (the demo data's images are part of the repository and always
-come back). Password-reset emails go to a Mailtrap test inbox, not to real
-mailboxes.
+Notes: every push to `main` redeploys both. The free Render server sleeps after
+15 idle minutes, so the first data load after that can take up to a minute.
+Uploaded photos are stored on the Render server's disk, which the free plan
+resets on each deploy, so uploads disappear then (the demo data's images are
+part of the repository and always come back). Password-reset emails go to a
+Mailtrap test inbox, not to real mailboxes.
 
 ---
 

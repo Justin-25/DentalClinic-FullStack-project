@@ -16,9 +16,10 @@ const reviewRoutes = require('./routes/reviewRoutes');
 // Start express app
 const app = express();
 
-// On Render the app sits behind a proxy: trust its X-Forwarded-For header so the rate
-// limiters count each visitor's own IP instead of the proxy's.
-if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
+// In production the app sits behind proxies: Render's own, plus Vercel's when the site is
+// opened through Vercel. TRUST_PROXY is how many of them to trust, so the rate limiters
+// count each visitor's own IP instead of a proxy's (all visitors would share one limit).
+if (process.env.NODE_ENV === 'production') app.set('trust proxy', Number(process.env.TRUST_PROXY ?? 1));
 
 // injects security headers into every response; blob: lets the pages preview a photo
 // before it's uploaded (profile and service images)

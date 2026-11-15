@@ -1,5 +1,7 @@
-# Render Blueprint: one free web service that builds the React app and runs the API,
-# which also serves the app. Secrets marked "sync: false" are asked for when you create it.
+# Render Blueprint: one free web service that runs the API. The public site is the React
+# app on Vercel, which forwards /api and /img here (frontend/vercel.json); this service
+# also serves its own copy of the app as a fallback. Secrets marked "sync: false" are
+# asked for when you create it.
 services:
   - type: web
     name: tooth-fairy-dentistry
@@ -11,6 +13,9 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # proxies in front of the app: Vercel + Render (see app.js); checked after the first deploy
+      - key: TRUST_PROXY
+        value: "2"
       # the live demo's own database, next to the dev one in the same Atlas cluster
       - key: DATABASE_NAME
         value: toothfairy-demo
