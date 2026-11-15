@@ -25,6 +25,7 @@ import DoctorLayout from "./layouts/DoctorLayout";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
 import DoctorAppointmentDetail from "./pages/doctor/DoctorAppointmentDetail";
 import DoctorSchedule from "./pages/doctor/DoctorSchedule";
+import EditProfile from "./pages/doctor/EditProfile";
 
 export const router = createBrowserRouter([
   {
@@ -105,7 +106,7 @@ export const router = createBrowserRouter([
             path: "doctor/schedule",
             element: <DoctorSchedule />,
           },
-          { path: "doctor/profile", element: <Placeholder title="Profile" /> },
+          { path: "doctor/profile", element: <EditProfile /> },
         ],
       },
     ],

@@ -1,8 +1,10 @@
 import { FaStar } from "react-icons/fa";
 
+// photoUrl: a full image URL (e.g. a just-picked photo's preview) instead of the saved photo file
 export default function DoctorCard({
   name,
   photo,
+  photoUrl,
   specialization,
   yearsOfExperience,
   ratingAverage,
@@ -11,7 +13,7 @@ export default function DoctorCard({
   return (
     <div className="flex items-start gap-3.5">
       <img
-        src={`/img/users/${photo}`}
+        src={photoUrl ?? `/img/users/${photo}`}
         alt=""
         loading="lazy"
         className="size-16 shrink-0 rounded-full bg-gray-200 object-cover"

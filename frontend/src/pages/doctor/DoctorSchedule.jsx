@@ -13,7 +13,9 @@ export default function DoctorSchedule() {
   const queryClient = useQueryClient();
   // null = no unsaved edits: show what the server has
   const [draft, setDraft] = useState(null);
-  const queryKey = ["schedule", user._id];
+  // Its own key: the public doctor and booking pages cache this same schedule
+  // under ["schedule", id] as the raw response, a different shape.
+  const queryKey = ["mySchedule"];
 
   const scheduleQ = useQuery({
     queryKey,
@@ -36,6 +38,8 @@ export default function DoctorSchedule() {
       }),
     onSuccess: (res) => {
       queryClient.setQueryData(queryKey, res.data.schedule);
+      // the public profile and booking pages show the new hours too
+      queryClient.invalidateQueries({ queryKey: ["schedule", user._id] });
       setDraft(null);
     },
   });

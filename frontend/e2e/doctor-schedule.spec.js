@@ -202,6 +202,30 @@ test.describe("Doctor schedule (desktop)", () => {
   });
 });
 
+test.describe("Doctor schedule and the public pages", () => {
+  test("opening your own public profile after the schedule page doesn't crash", async ({ page }) => {
+    await fakeSchedule(page, SCHEDULE());
+    await login(page, DOCTOR);
+    await page.goto("/doctor/schedule");
+    await expect(page.getByRole("heading", { name: "Weekly hours" })).toBeVisible();
+
+    // the public page refetches the schedule: keep that slow, like the real server,
+    // so the page first renders whatever is already cached
+    await page.route("**/api/schedules/*", async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      return route.fallback();
+    });
+
+    // in-app clicks keep the cached schedule: logo -> Doctors -> your own card
+    await page.getByRole("banner").getByRole("link").first().click();
+    await page.getByRole("banner").getByRole("link", { name: "Doctors" }).first().click();
+    await page.getByRole("link", { name: /Mei Chen/ }).first().click();
+
+    await expect(page.getByRole("heading", { level: 1, name: /Mei Chen/ })).toBeVisible();
+    await expect(page.getByText("Unexpected Application Error!")).toHaveCount(0);
+  });
+});
+
 test.describe("Doctor schedule on a phone", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
