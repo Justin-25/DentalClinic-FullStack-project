@@ -44,6 +44,14 @@ export const formatShortDate = (ymd) => {
   return new Date(`${ymd}T00:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'});
 }
 
+// '2026-10-13' -> 'Oct 13' (this year) or 'Oct 13, 2025' (another year)
+export const formatMonthDay = (ymd) => {
+  const sameYear = ymd.slice(0, 4) === String(new Date().getFullYear());
+  return new Date(`${ymd}T00:00:00Z`).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', ...(sameYear ? {} : { year: 'numeric' }), timeZone: 'UTC'
+  });
+}
+
 export const formatLongDate = (ymd) => {
   return new Date(`${ymd}T00:00:00Z`).toLocaleDateString('en-US', {
     weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC'

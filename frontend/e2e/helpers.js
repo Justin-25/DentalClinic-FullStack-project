@@ -5,6 +5,7 @@ export const PASSWORD = process.env.E2E_PASSWORD ?? "Demo1234!";
 export const PATIENT_A = "elena.reyes@example.com";
 export const PATIENT_B = "carlos.mendoza@example.com";
 export const DOCTOR = "mei.chen@toothfairy.example";
+export const ADMIN = "admin@toothfairy.example";
 
 // Fill and submit the login form that is already on screen.
 export async function submitLogin(page, email, password = PASSWORD) {

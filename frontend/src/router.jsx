@@ -26,6 +26,8 @@ import DoctorAppointments from "./pages/doctor/DoctorAppointments";
 import DoctorAppointmentDetail from "./pages/doctor/DoctorAppointmentDetail";
 import DoctorSchedule from "./pages/doctor/DoctorSchedule";
 import EditProfile from "./pages/doctor/EditProfile";
+import AdminLayout from "./layouts/AdminLayout";
+import AdminAppointments from "./pages/admin/AdminAppointments";
 
 export const router = createBrowserRouter([
   {
@@ -37,15 +39,6 @@ export const router = createBrowserRouter([
       { path: "doctors", element: <Doctors /> },
       { path: "doctors/:doctorId", element: <DoctorProfile /> },
       { path: "reviews", element: <Reviews /> },
-      {
-        element: <RequireAuth roles={["admin"]} />,
-        children: [
-          {
-            path: "admin/appointments",
-            element: <Placeholder title="Admin portal" />,
-          },
-        ],
-      },
       { path: "*", element: <NotFound /> },
     ],
   },
@@ -107,6 +100,20 @@ export const router = createBrowserRouter([
             element: <DoctorSchedule />,
           },
           { path: "doctor/profile", element: <EditProfile /> },
+        ],
+      },
+    ],
+  },
+  {
+    element: <RequireAuth roles={["admin"]} />,
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          { path: "admin/appointments", element: <AdminAppointments /> },
+          { path: "admin/users", element: <Placeholder title="Users" /> },
+          { path: "admin/services", element: <Placeholder title="Services" /> },
+          { path: "admin/reviews", element: <Placeholder title="Reviews" /> },
         ],
       },
     ],
