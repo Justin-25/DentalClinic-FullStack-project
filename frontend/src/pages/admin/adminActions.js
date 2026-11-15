@@ -12,6 +12,23 @@ export const ADMIN_ACTIONS = {
   ],
 };
 
+// every status, for "Correct status": admins may set any of them to fix a mistake
+export const STATUS_LABEL = {
+  pending: "Pending",
+  confirmed: "Confirmed",
+  completed: "Completed",
+  cancelled: "Cancelled",
+  "no-show": "No-show",
+};
+
+// after any status change: this page, the admin list, the doctor's and patient's lists;
+// a cancel frees the slot (and un-cancelling takes it again)
+export const refreshAfterStatusChange = (queryClient) =>
+  Promise.all([
+    queryClient.invalidateQueries({ queryKey: ["appointments"] }),
+    queryClient.invalidateQueries({ queryKey: ["availability"] }),
+  ]);
+
 // the Modal's title and confirm button for each new status
 export const CONFIRM = {
   confirmed: { title: (name) => `Confirm ${name}'s appointment?`, button: "Confirm" },

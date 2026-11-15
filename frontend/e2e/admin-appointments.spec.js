@@ -122,8 +122,8 @@ test.describe("Admin appointments (desktop)", () => {
       await expect(details).toContainText(text);
     }
     await expect(page.getByRole("main").getByText("Pending", { exact: true })).toBeVisible();
-    // pending: confirm or cancel
-    await expect(page.getByRole("main").getByRole("button")).toHaveText(["Confirm", "Cancel appointment"]);
+    // pending: confirm or cancel (and the correction link)
+    await expect(page.getByRole("main").getByRole("button")).toHaveText(["Confirm", "Cancel appointment", "Correct status…"]);
 
     await page.getByRole("main").getByRole("link", { name: "Appointments" }).click();
     await expect(page).toHaveURL("/admin/appointments");
@@ -143,8 +143,8 @@ test.describe("Admin appointments (desktop)", () => {
 
     expect(patches).toEqual([{ id: "a11", status: "cancelled", cancellationReason: "The dentist is unwell" }]);
     await expect(page.getByText('"The dentist is unwell"')).toBeVisible();
-    // cancelled is final: no more actions
-    await expect(page.getByRole("main").getByRole("button")).toHaveCount(0);
+    // cancelled is final: only the correction link is left
+    await expect(page.getByRole("main").getByRole("button")).toHaveText(["Correct status…"]);
   });
 
   test("a confirmed visit can be completed (or no-show / cancel), asking first", async ({ page }) => {
@@ -153,7 +153,7 @@ test.describe("Admin appointments (desktop)", () => {
     await page.goto("/admin/appointments/a1");
     const dialog = page.getByRole("alertdialog");
 
-    await expect(page.getByRole("main").getByRole("button")).toHaveText(["Mark completed", "Mark no-show", "Cancel appointment"]);
+    await expect(page.getByRole("main").getByRole("button")).toHaveText(["Mark completed", "Mark no-show", "Cancel appointment", "Correct status…"]);
     await page.getByRole("button", { name: "Mark completed" }).click();
     await expect(dialog.getByRole("heading")).toHaveText("Mark Patient 1's visit as completed?");
     await dialog.getByRole("button", { name: "Not now" }).click();
@@ -164,7 +164,59 @@ test.describe("Admin appointments (desktop)", () => {
     await expect(dialog).toBeHidden();
     expect(patches).toEqual([{ id: "a1", status: "completed" }]);
     await expect(page.getByRole("main").getByText("Completed", { exact: true })).toBeVisible();
-    await expect(page.getByRole("main").getByRole("button")).toHaveCount(0);
+    await expect(page.getByRole("main").getByRole("button")).toHaveText(["Correct status…"]);
+  });
+
+  test("Correct status fixes a mistake: any other status, asked first", async ({ page }) => {
+    const patches = await fakeAdminData(page);
+    await login(page, ADMIN);
+    const dialog = page.getByRole("alertdialog");
+
+    // a cancel by mistake goes back to confirmed
+    await page.goto("/admin/appointments/a12");
+    await page.getByRole("button", { name: "Correct status…" }).click();
+    await expect(dialog.getByRole("heading")).toHaveText("Correct Carlos Mendoza's status");
+    await expect(dialog.getByRole("radio")).toHaveCount(4); // every status but the current one
+    await expect(dialog.getByRole("radio", { name: "Cancelled" })).toHaveCount(0);
+    await expect(dialog.getByRole("button", { name: "Save" })).toBeDisabled();
+    await dialog.getByRole("radio", { name: "Confirmed" }).check();
+    await dialog.getByRole("button", { name: "Save" }).click();
+    await expect(dialog).toBeHidden();
+
+    expect(patches).toEqual([{ id: "a12", status: "confirmed" }]);
+    await expect(page.getByRole("main").getByText("Confirmed", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Cancelled" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Mark completed" })).toBeVisible();
+
+    // choosing Cancelled offers the reason box; Not now sends nothing
+    await page.getByRole("button", { name: "Correct status…" }).click();
+    await dialog.getByRole("radio", { name: "Cancelled" }).check();
+    await expect(dialog.getByLabel("Reason (optional)")).toBeVisible();
+    await dialog.getByRole("button", { name: "Not now" }).click();
+    await expect(dialog).toBeHidden();
+    expect(patches).toHaveLength(1);
+  });
+
+  test("Correct status explains when a cancelled slot was booked again", async ({ page }) => {
+    await fakeAdminData(page);
+    // registered last, so it answers first: the backend's unique-index error
+    await page.route("**/api/appointments/a12/status", (route) =>
+      route.fulfill({
+        status: 409,
+        json: { status: "fail", code: "DUPLICATE_VALUE", message: "This combination of doctor, date, timeSlot is already in use." },
+      }),
+    );
+    await login(page, ADMIN);
+    await page.goto("/admin/appointments/a12");
+    const dialog = page.getByRole("alertdialog");
+
+    await page.getByRole("button", { name: "Correct status…" }).click();
+    await dialog.getByRole("radio", { name: "Pending" }).check();
+    await dialog.getByRole("button", { name: "Save" }).click();
+    await expect(dialog.getByRole("heading")).toHaveText("We couldn't update this appointment");
+    await expect(dialog).toContainText("Another patient has booked this time since it was cancelled");
+    await dialog.getByRole("button", { name: "Close" }).click();
+    await expect(page.getByRole("heading", { name: "Cancelled" })).toBeVisible();
   });
 
   test("a cancelled visit shows its reason box; an unknown id says so", async ({ page }) => {

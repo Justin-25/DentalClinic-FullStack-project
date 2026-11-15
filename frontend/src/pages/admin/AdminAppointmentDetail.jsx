@@ -7,9 +7,11 @@ import Modal from "../../components/Modal";
 import StatusBadge from "../../components/StatusBadge";
 import { dangerBtn, primaryBtn, secondaryBtn } from "../../components/booking/buttonStyles";
 import { formatLongDate, formatShortDate, formatTimeRange } from "../../utils/format";
-import { ADMIN_ACTIONS, CONFIRM } from "./adminActions";
+import { ADMIN_ACTIONS, CONFIRM, refreshAfterStatusChange } from "./adminActions";
+import CorrectStatus from "./CorrectStatus";
 
-// The doctor's detail layout with the dentist added; admins can also change the status (and cancel).
+// The doctor's detail layout with the dentist added; admins can also change the status (and cancel),
+// and correct a status set by mistake.
 export default function AdminAppointmentDetail() {
   const { id } = useParams();
   const queryClient = useQueryClient();
@@ -32,12 +34,7 @@ export default function AdminAppointmentDetail() {
         },
       }),
     onSuccess: () => setConfirming(null),
-    // this page, the admin list, the doctor's and patient's lists; a cancel frees the slot
-    onSettled: () =>
-      Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["appointments"] }),
-        queryClient.invalidateQueries({ queryKey: ["availability"] }),
-      ]),
+    onSettled: () => refreshAfterStatusChange(queryClient),
   });
 
   function openConfirm(action) {
@@ -110,31 +107,38 @@ export default function AdminAppointmentDetail() {
           ))}
         </dl>
 
-        {/* pending or confirmed: what can happen next (completed, cancelled and no-show are final) */}
-        {actions.length > 0 && (
-          <section className="w-full space-y-3 lg:w-85 lg:shrink-0 lg:rounded-xl lg:bg-gray-100 lg:p-5">
-            <h2 className="hidden text-lg font-bold text-ink lg:block">Update status</h2>
-            {actions.map((action, i) => (
-              <button
-                key={action.status}
-                type="button"
-                onClick={() => openConfirm(action)}
-                className={i === 0 ? primaryBtn : secondaryBtn}
-              >
-                {action.label}
-              </button>
-            ))}
-          </section>
-        )}
+        <div className="w-full space-y-3 lg:w-85 lg:shrink-0">
+          {/* pending or confirmed: what can happen next (completed, cancelled and no-show are final) */}
+          {actions.length > 0 && (
+            <section className="space-y-3 lg:rounded-xl lg:bg-gray-100 lg:p-5">
+              <h2 className="hidden text-lg font-bold text-ink lg:block">Update status</h2>
+              {actions.map((action, i) => (
+                <button
+                  key={action.status}
+                  type="button"
+                  onClick={() => openConfirm(action)}
+                  className={i === 0 ? primaryBtn : secondaryBtn}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </section>
+          )}
 
-        {appt.status === "cancelled" && (
-          <section className="w-full space-y-1 rounded-[10px] bg-gray-100 p-3.5 text-[13px] lg:w-85 lg:shrink-0">
-            <h2 className="font-semibold text-ink">Cancelled</h2>
-            <p className="text-gray-500">
-              {appt.cancellationReason ? `"${appt.cancellationReason}"` : "No reason given."}
-            </p>
-          </section>
-        )}
+          {appt.status === "cancelled" && (
+            <section className="space-y-1 rounded-[10px] bg-gray-100 p-3.5 text-[13px]">
+              <h2 className="font-semibold text-ink">Cancelled</h2>
+              <p className="text-gray-500">
+                {appt.cancellationReason ? `"${appt.cancellationReason}"` : "No reason given."}
+              </p>
+            </section>
+          )}
+
+          {/* any status, to fix a mistake */}
+          <div>
+            <CorrectStatus appointment={appt} name={name} />
+          </div>
+        </div>
       </div>
 
       <Modal
@@ -173,7 +177,7 @@ export default function AdminAppointmentDetail() {
           statusM.error.message
         ) : cancelling ? (
           <div className="space-y-3">
-            <p>The time slot opens up again. This can't be undone.</p>
+            <p>The time slot opens up again, and the patient and dentist will see it's cancelled.</p>
             <div className="space-y-1.5">
               <label htmlFor="admin-cancel-reason" className="block text-[13px] font-medium text-ink">
                 Reason (optional)
@@ -188,7 +192,7 @@ export default function AdminAppointmentDetail() {
             </div>
           </div>
         ) : (
-          "This can't be undone."
+          "The patient and dentist will see the new status."
         )}
       </Modal>
     </div>
