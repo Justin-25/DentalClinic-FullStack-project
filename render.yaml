@@ -16,8 +16,8 @@ services:
       # how many steps back the visitor's IP is (see app.js). Checked on the live server:
       # visitor → Vercel → Cloudflare → Render's proxy → Render's internal proxy → app.
       # The rate limiters don't rely on it: they use Vercel's / Cloudflare's own visitor
-      # headers (utils/limiter.js), because Vercel sometimes passes on a made-up
-      # X-Forwarded-For. This setting is the fallback for anything else reading req.ip.
+      # headers (utils/limiter.js, with its known gap), because Vercel sometimes passes on a
+      # made-up X-Forwarded-For. This setting is the fallback for anything else reading req.ip.
       - key: TRUST_PROXY
         value: "4"
       # the live demo's own database, next to the dev one in the same Atlas cluster
