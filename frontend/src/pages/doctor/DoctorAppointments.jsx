@@ -53,7 +53,8 @@ export default function DoctorAppointments() {
           <h1 className="text-lg font-bold text-ink lg:text-[32px]">
             {tab === "today" ? formatLongDate(today) : "Upcoming"}
           </h1>
-          {appointmentsQ.isSuccess && (
+          {/* an empty day says so below, so no "0 appointments" line */}
+          {appointmentsQ.isSuccess && list.length > 0 && (
             <p className="text-[13px] text-gray-500 lg:text-sm">
               {summary(list)}
             </p>

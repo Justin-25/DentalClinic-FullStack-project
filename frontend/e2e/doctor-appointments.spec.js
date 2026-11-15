@@ -104,6 +104,20 @@ test.describe("Doctor appointments (desktop)", () => {
     await expect(page.getByText("Elena Reyes")).toHaveCount(0);
   });
 
+  test("an empty day says so, without a '0 appointments' line", async ({ page }) => {
+    await page.route("**/api/appointments/myAppointments", (route) =>
+      route.fulfill({ json: { status: "success", results: 0, data: { appointments: [] } } }),
+    );
+    await login(page, DOCTOR);
+    await page.goto("/doctor/appointments");
+
+    await expect(page.getByText("No appointments today.")).toBeVisible();
+    await expect(page.getByText(/\d+ appointments?/)).toHaveCount(0);
+    await page.getByRole("button", { name: "Upcoming" }).click();
+    await expect(page.getByText("No upcoming appointments.")).toBeVisible();
+    await expect(page.getByText(/\d+ appointments?/)).toHaveCount(0);
+  });
+
   test("Complete asks first, then saves and updates the row", async ({ page }) => {
     const patches = await fakeAppointments(page);
     await login(page, DOCTOR);
