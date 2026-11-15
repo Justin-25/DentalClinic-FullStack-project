@@ -12,14 +12,14 @@ const serviceRoutes = require('./routes/serviceRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
-const authController = require('./controllers/authController');
 
 // Start express app
 const app = express();
 
-// In production the app sits behind proxies: Render's own, plus Vercel's when the site is
-// opened through Vercel. TRUST_PROXY is how many of them to trust, so the rate limiters
-// count each visitor's own IP instead of a proxy's (all visitors would share one limit).
+// In production the app sits behind proxies, and TRUST_PROXY is how many steps back the
+// visitor's own IP is, so the rate limiters count each visitor (not a proxy) separately.
+// On the live site (checked): visitor → Vercel → Cloudflare → Render's proxy → Render's
+// internal proxy → app, so it's 4. Vercel drops any address a visitor makes up.
 if (process.env.NODE_ENV === 'production') app.set('trust proxy', Number(process.env.TRUST_PROXY ?? 1));
 
 // injects security headers into every response; blob: lets the pages preview a photo
@@ -48,22 +48,6 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/schedules', scheduleRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/reviews', reviewRoutes);
-
-// TEMPORARY, admin only: shows how a request reached the server (the caller's own IP as
-// each proxy reported it), to set TRUST_PROXY correctly behind Render and Vercel.
-// Header values are shown only for the forwarding headers below; other headers by name only.
-const FORWARDING_HEADERS = ['x-forwarded-for', 'x-real-ip', 'cf-connecting-ip', 'true-client-ip',
-  'x-vercel-forwarded-for', 'x-vercel-id', 'forwarded', 'x-forwarded-proto', 'x-forwarded-host', 'via'];
-app.get('/api/debug/forwarding', authController.protect, authController.restrictTo('admin'), (req, res) => {
-  res.json({
-    ip: req.ip,
-    ips: req.ips,
-    socket: req.socket.remoteAddress,
-    trustProxy: app.get('trust proxy'),
-    forwarding: Object.fromEntries(FORWARDING_HEADERS.filter((h) => req.headers[h]).map((h) => [h, req.headers[h]])),
-    headerNames: Object.keys(req.headers)
-  });
-});
 
 // In production this server also serves the built React app (frontend/dist), so the
 // whole site is one service on one URL and the API needs no CORS.

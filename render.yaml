@@ -13,12 +13,13 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      # proxies to trust in front of the app (see app.js). Checked live: with 2, the limiters
-      # see Render's rotating proxy addresses rather than each visitor, so limits are loose
-      # (nobody is locked out by others, and a made-up X-Forwarded-For doesn't help either).
-      # Finding the exact value needs a look at the forwarded headers on the live server.
+      # how many steps back the visitor's IP is (see app.js). Checked on the live server:
+      # visitor → Vercel → Cloudflare → Render's proxy → Render's internal proxy → app.
+      # Known gap: someone calling this Render address directly (not through the site) can
+      # add a made-up X-Forwarded-For to get around the limits. Closing it needs a secret
+      # header that only Vercel sends.
       - key: TRUST_PROXY
-        value: "2"
+        value: "4"
       # the live demo's own database, next to the dev one in the same Atlas cluster
       - key: DATABASE_NAME
         value: toothfairy-demo
